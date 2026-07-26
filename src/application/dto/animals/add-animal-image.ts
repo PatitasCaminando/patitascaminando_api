@@ -1,7 +1,7 @@
-import { IsBoolean, IsInt, IsOptional, IsUUID } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
 
 export class AddAnimalImageDto {
-  @IsUUID()
+  @IsString()
   mediaId: string;
 
   @IsOptional()

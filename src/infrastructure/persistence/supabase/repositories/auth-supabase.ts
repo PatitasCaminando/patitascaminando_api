@@ -12,7 +12,6 @@ import type {
   AuthRepositoryPort,
   CreateOperatorInput,
   LoginUserInput,
-  RegisterUserInput,
 } from '../../../../domain/ports/output/auth-repository';
 import {
   SUPABASE_ADMIN_CLIENT,
@@ -27,10 +26,6 @@ export class AuthSupabaseRepository implements AuthRepositoryPort {
     @Inject(SUPABASE_PUBLIC_CLIENT)
     private readonly supabasePublic: SupabaseClient,
   ) {}
-
-  async register(input: RegisterUserInput): Promise<RegisteredUser> {
-    return this.createAuthUser(input);
-  }
 
   async createOperator(input: CreateOperatorInput): Promise<RegisteredUser> {
     const user = await this.createAuthUser(input);

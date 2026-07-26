@@ -22,6 +22,18 @@ export type StaffProfileRow = {
   updated_at: string;
 };
 
+export type SiteSectionRow = {
+  id: string;
+  section_key:
+    'rescatistas' | 'bienestar_animal' | 'contacto' | 'redes_sociales';
+  title: string | null;
+  content: Record<string, unknown>;
+  is_published: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type UserRoleRow = {
   role_key: string;
   roles: {
