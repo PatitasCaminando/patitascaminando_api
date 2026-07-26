@@ -1,0 +1,56 @@
+import type {
+  Animal,
+  AnimalImage,
+  AnimalSex,
+  AnimalSize,
+  AnimalSpecies,
+  AnimalStatus,
+} from '../../models/animals/animal';
+
+export const ANIMAL_REPOSITORY = Symbol('ANIMAL_REPOSITORY');
+
+export interface CreateAnimalInput {
+  createdBy?: string;
+  name: string;
+  species: AnimalSpecies;
+  sex: AnimalSex;
+  size: AnimalSize;
+  approximateAge: string;
+  status?: AnimalStatus;
+  description: string;
+  generalCondition: string;
+  photoPaths: string[];
+  isActive?: boolean;
+  isPubliclyVisible?: boolean;
+}
+
+export interface UpdateAnimalInput {
+  name?: string;
+  species?: AnimalSpecies;
+  sex?: AnimalSex;
+  size?: AnimalSize;
+  approximateAge?: string;
+  status?: AnimalStatus;
+  description?: string;
+  generalCondition?: string;
+  photoPaths?: string[];
+  isActive?: boolean;
+  isPubliclyVisible?: boolean;
+}
+
+export interface AddAnimalImageInput {
+  mediaId: string;
+  isPrimary?: boolean;
+  orderIndex?: number;
+}
+
+export interface AnimalRepositoryPort {
+  findPublicAnimals(): Promise<Animal[]>;
+  findPublicAnimalBySlug(slug: string): Promise<Animal>;
+  findAdminAnimals(): Promise<Animal[]>;
+  createAnimal(input: CreateAnimalInput): Promise<Animal>;
+  updateAnimal(id: string, input: UpdateAnimalInput): Promise<Animal>;
+  deleteAnimal(id: string): Promise<void>;
+  addImage(animalId: string, input: AddAnimalImageInput): Promise<AnimalImage>;
+  deleteImage(animalId: string, imageId: string): Promise<void>;
+}
