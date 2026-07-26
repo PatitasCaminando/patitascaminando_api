@@ -1,0 +1,586 @@
+{
+  "info": {
+    "_postman_id": "d8bd4b0d-7b47-4b0c-9c0b-patitascaminando",
+    "name": "PATITAS CAMINANDO API",
+    "description": "Postman collection for Patitas Caminando backend. Use Login first to populate accessToken automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": []
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": []
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "animalId",
+      "value": ""
+    },
+    {
+      "key": "animalImageId",
+      "value": ""
+    },
+    {
+      "key": "adoptionApplicationId",
+      "value": ""
+    },
+    {
+      "key": "donationOfferId",
+      "value": ""
+    },
+    {
+      "key": "housingTypeId",
+      "value": ""
+    },
+    {
+      "key": "mediaId",
+      "value": ""
+    },
+    {
+      "key": "sectionId",
+      "value": ""
+    },
+    {
+      "key": "heroCardId",
+      "value": ""
+    },
+    {
+      "key": "impactBlockId",
+      "value": ""
+    },
+    {
+      "key": "infoCardId",
+      "value": ""
+    },
+    {
+      "key": "contactInfoId",
+      "value": ""
+    },
+    {
+      "key": "socialLinkId",
+      "value": ""
+    },
+    {
+      "key": "faqId",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "avatarId",
+      "value": ""
+    },
+    {
+      "key": "badgeId",
+      "value": ""
+    },
+    {
+      "key": "userBadgeId",
+      "value": ""
+    },
+    {
+      "key": "roleKey",
+      "value": "operator"
+    },
+    {
+      "key": "permissionKey",
+      "value": "animals.manage"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Public User",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"visitante@example.com\",\n  \"password\": \"Cambiar123!\",\n  \"firstNames\": \"Dayana\",\n  \"lastNames\": \"Castillo\",\n  \"phone\": \"0999999999\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.accessToken) {",
+                  "  pm.collectionVariables.set('accessToken', json.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@rescatistas.local\",\n  \"password\": \"Cambiar123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Current User",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Landing",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/public/landing",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "landing"]
+            }
+          }
+        },
+        {
+          "name": "Animals - List",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/public/animals",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "animals"]
+            }
+          }
+        },
+        {
+          "name": "Animals - Detail",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/public/animals/{{animalId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "animals", "{{animalId}}"]
+            }
+          }
+        },
+        {
+          "name": "Adoptions - Housing Types",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/public/adoptions/housing-types",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "adoptions", "housing-types"]
+            }
+          }
+        },
+        {
+          "name": "Adoptions - Create Application",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstNames\": \"Dayana\",\n  \"lastNames\": \"Castillo\",\n  \"phone\": \"0999999999\",\n  \"email\": \"dayana@example.com\",\n  \"desiredAnimalDescription\": \"Perrito pequeno y tranquilo\",\n  \"adoptionReason\": \"Deseo brindar un hogar responsable\",\n  \"specificAnimalId\": \"{{animalId}}\",\n  \"additionalMessage\": \"Puedo coordinar una visita esta semana\",\n  \"dataProcessingAccepted\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/public/adoptions/applications",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "adoptions", "applications"]
+            }
+          }
+        },
+        {
+          "name": "Donations - Create Offer",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstNames\": \"Dayana\",\n  \"lastNames\": \"Castillo\",\n  \"phone\": \"0999999999\",\n  \"email\": \"dayana@example.com\",\n  \"selectedItems\": [\"alimento_perros\", \"mantas\"],\n  \"approximateQuantity\": \"2 fundas\",\n  \"productName\": \"Alimento adulto\",\n  \"itemCondition\": \"Nuevo\",\n  \"expirationDate\": \"2026-12-31\",\n  \"deliveryAvailability\": \"Fines de semana\",\n  \"otherDescription\": \"\",\n  \"descriptionObservation\": \"Deseo donar alimento y mantas en buen estado\",\n  \"dataProcessingAccepted\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/public/donations/offers",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "donations", "offers"]
+            }
+          }
+        },
+        {
+          "name": "Contact Info",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/public/contact-info",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "contact-info"]
+            }
+          }
+        },
+        {
+          "name": "Social Links",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/public/social-links",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "social-links"]
+            }
+          }
+        },
+        {
+          "name": "FAQs",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/public/faqs",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "faqs"]
+            }
+          }
+        },
+        {
+          "name": "Avatar Options",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/public/avatar-options",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "avatar-options"]
+            }
+          }
+        },
+        {
+          "name": "Badges",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/public/badges",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "badges"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Animals",
+      "item": [
+        {
+          "name": "List Animals",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/admin/animals", "host": ["{{baseUrl}}"], "path": ["admin", "animals"] }
+          }
+        },
+        {
+          "name": "Create Animal",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Luna\",\n  \"species\": \"perro\",\n  \"sex\": \"hembra\",\n  \"size\": \"mediano\",\n  \"approximateAge\": \"2 anos\",\n  \"status\": \"disponible\",\n  \"description\": \"Perrita sociable y tranquila\",\n  \"generalCondition\": \"Buen estado general\",\n  \"photoPaths\": [\"animals/luna-1.jpg\"],\n  \"isActive\": true,\n  \"isPubliclyVisible\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/animals", "host": ["{{baseUrl}}"], "path": ["admin", "animals"] }
+          }
+        },
+        {
+          "name": "Update Animal",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"en_proceso\",\n  \"isPubliclyVisible\": true\n}" },
+            "url": { "raw": "{{baseUrl}}/admin/animals/{{animalId}}", "host": ["{{baseUrl}}"], "path": ["admin", "animals", "{{animalId}}"] }
+          }
+        },
+        {
+          "name": "Archive Animal",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/admin/animals/{{animalId}}", "host": ["{{baseUrl}}"], "path": ["admin", "animals", "{{animalId}}"] }
+          }
+        },
+        {
+          "name": "Add Animal Image Path",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"mediaId\": \"animals/luna-2.jpg\",\n  \"isPrimary\": false,\n  \"orderIndex\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/admin/animals/{{animalId}}/images", "host": ["{{baseUrl}}"], "path": ["admin", "animals", "{{animalId}}", "images"] }
+          }
+        },
+        {
+          "name": "Delete Animal Image Path",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/admin/animals/{{animalId}}/images/{{animalImageId}}", "host": ["{{baseUrl}}"], "path": ["admin", "animals", "{{animalId}}", "images", "{{animalImageId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Adoptions",
+      "item": [
+        {
+          "name": "List Housing Types",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/adoptions/housing-types", "host": ["{{baseUrl}}"], "path": ["admin", "adoptions", "housing-types"] } }
+        },
+        {
+          "name": "Create Housing Type",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"key\": \"casa\",\n  \"name\": \"Casa\",\n  \"description\": \"Vivienda con espacio adecuado\",\n  \"requiresOtherDetail\": false,\n  \"isActive\": true,\n  \"orderIndex\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/admin/adoptions/housing-types", "host": ["{{baseUrl}}"], "path": ["admin", "adoptions", "housing-types"] }
+          }
+        },
+        {
+          "name": "Update Housing Type",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Casa familiar\",\n  \"isActive\": true\n}" },
+            "url": { "raw": "{{baseUrl}}/admin/adoptions/housing-types/{{housingTypeId}}", "host": ["{{baseUrl}}"], "path": ["admin", "adoptions", "housing-types", "{{housingTypeId}}"] }
+          }
+        },
+        {
+          "name": "Delete Housing Type",
+          "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/adoptions/housing-types/{{housingTypeId}}", "host": ["{{baseUrl}}"], "path": ["admin", "adoptions", "housing-types", "{{housingTypeId}}"] } }
+        },
+        {
+          "name": "List Adoption Applications",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/adoptions/applications", "host": ["{{baseUrl}}"], "path": ["admin", "adoptions", "applications"] } }
+        },
+        {
+          "name": "Update Adoption Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"contactada\",\n  \"internalObservations\": \"Se contacto por telefono\"\n}" },
+            "url": { "raw": "{{baseUrl}}/admin/adoptions/applications/{{adoptionApplicationId}}/status", "host": ["{{baseUrl}}"], "path": ["admin", "adoptions", "applications", "{{adoptionApplicationId}}", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Donations",
+      "item": [
+        {
+          "name": "List Donation Offers",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/donations/offers", "host": ["{{baseUrl}}"], "path": ["admin", "donations", "offers"] } }
+        },
+        {
+          "name": "Update Donation Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"contactada\",\n  \"internalObservations\": \"Se coordinara entrega\"\n}" },
+            "url": { "raw": "{{baseUrl}}/admin/donations/offers/{{donationOfferId}}/status", "host": ["{{baseUrl}}"], "path": ["admin", "donations", "offers", "{{donationOfferId}}", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Landing",
+      "item": [
+        { "name": "Get Landing", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/landing", "host": ["{{baseUrl}}"], "path": ["admin", "landing"] } } },
+        {
+          "name": "Create Section",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"key\": \"bienestar_animal\",\n  \"title\": \"Bienestar animal\",\n  \"highlightedText\": \"Patitas Caminando\",\n  \"subtitle\": \"Consejos y cuidado responsable\",\n  \"mainMediaId\": \"{{mediaId}}\",\n  \"isActive\": true,\n  \"orderIndex\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/admin/landing/sections", "host": ["{{baseUrl}}"], "path": ["admin", "landing", "sections"] }
+          }
+        },
+        {
+          "name": "Create Hero Card",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"sectionId\": \"{{sectionId}}\",\n  \"title\": \"Adopta responsablemente\",\n  \"description\": \"Conoce animalitos disponibles\",\n  \"icon\": \"heart\",\n  \"ctaLabel\": \"Ver animales\",\n  \"ctaHref\": \"/animals\",\n  \"isActive\": true,\n  \"orderIndex\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/admin/landing/hero-cards", "host": ["{{baseUrl}}"], "path": ["admin", "landing", "hero-cards"] }
+          }
+        },
+        {
+          "name": "Create Impact Block",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"sectionId\": \"{{sectionId}}\",\n  \"prefixText\": \"Mas de\",\n  \"metricValue\": 20,\n  \"suffixText\": \"rescatados\",\n  \"description\": \"Animales apoyados por la fundacion\",\n  \"icon\": \"paw-print\",\n  \"ctaLabel\": \"Ayudar\",\n  \"ctaHref\": \"/donations\",\n  \"isActive\": true,\n  \"orderIndex\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/admin/landing/impact-blocks", "host": ["{{baseUrl}}"], "path": ["admin", "landing", "impact-blocks"] }
+          }
+        },
+        {
+          "name": "Create Info Card",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"sectionId\": \"{{sectionId}}\",\n  \"title\": \"Rescatistas\",\n  \"description\": \"Trabajo comunitario por los animales\",\n  \"icon\": \"users\",\n  \"ctaLabel\": \"Conocer mas\",\n  \"ctaHref\": \"/about\",\n  \"isActive\": true,\n  \"orderIndex\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/admin/landing/info-cards", "host": ["{{baseUrl}}"], "path": ["admin", "landing", "info-cards"] }
+          }
+        },
+        { "name": "Update Section", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"title\": \"Bienestar animal actualizado\",\n  \"isActive\": true\n}" }, "url": { "raw": "{{baseUrl}}/admin/landing/sections/{{sectionId}}", "host": ["{{baseUrl}}"], "path": ["admin", "landing", "sections", "{{sectionId}}"] } } },
+        { "name": "Update Hero Card", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"title\": \"Adopta con amor\"\n}" }, "url": { "raw": "{{baseUrl}}/admin/landing/hero-cards/{{heroCardId}}", "host": ["{{baseUrl}}"], "path": ["admin", "landing", "hero-cards", "{{heroCardId}}"] } } },
+        { "name": "Update Impact Block", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"metricValue\": 25\n}" }, "url": { "raw": "{{baseUrl}}/admin/landing/impact-blocks/{{impactBlockId}}", "host": ["{{baseUrl}}"], "path": ["admin", "landing", "impact-blocks", "{{impactBlockId}}"] } } },
+        { "name": "Update Info Card", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"title\": \"Equipo rescatista\"\n}" }, "url": { "raw": "{{baseUrl}}/admin/landing/info-cards/{{infoCardId}}", "host": ["{{baseUrl}}"], "path": ["admin", "landing", "info-cards", "{{infoCardId}}"] } } },
+        { "name": "Delete Section", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/landing/sections/{{sectionId}}", "host": ["{{baseUrl}}"], "path": ["admin", "landing", "sections", "{{sectionId}}"] } } },
+        { "name": "Delete Hero Card", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/landing/hero-cards/{{heroCardId}}", "host": ["{{baseUrl}}"], "path": ["admin", "landing", "hero-cards", "{{heroCardId}}"] } } },
+        { "name": "Delete Impact Block", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/landing/impact-blocks/{{impactBlockId}}", "host": ["{{baseUrl}}"], "path": ["admin", "landing", "impact-blocks", "{{impactBlockId}}"] } } },
+        { "name": "Delete Info Card", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/landing/info-cards/{{infoCardId}}", "host": ["{{baseUrl}}"], "path": ["admin", "landing", "info-cards", "{{infoCardId}}"] } } }
+      ]
+    },
+    {
+      "name": "Admin - Settings",
+      "item": [
+        { "name": "List Contact Info", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/settings/contact-info", "host": ["{{baseUrl}}"], "path": ["admin", "settings", "contact-info"] } } },
+        { "name": "Create Contact Info", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"phone\": \"0999999999\",\n  \"whatsapp\": \"0999999999\",\n  \"email\": \"contacto@patitascaminando.local\",\n  \"address\": \"Zona de atencion reservada\",\n  \"schedule\": \"Lunes a viernes\",\n  \"mapUrl\": \"\",\n  \"isPublic\": true\n}" }, "url": { "raw": "{{baseUrl}}/admin/settings/contact-info", "host": ["{{baseUrl}}"], "path": ["admin", "settings", "contact-info"] } } },
+        { "name": "Update Contact Info", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"phone\": \"0988888888\"\n}" }, "url": { "raw": "{{baseUrl}}/admin/settings/contact-info/{{contactInfoId}}", "host": ["{{baseUrl}}"], "path": ["admin", "settings", "contact-info", "{{contactInfoId}}"] } } },
+        { "name": "Delete Contact Info", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/settings/contact-info/{{contactInfoId}}", "host": ["{{baseUrl}}"], "path": ["admin", "settings", "contact-info", "{{contactInfoId}}"] } } },
+        { "name": "List Social Links", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/settings/social-links", "host": ["{{baseUrl}}"], "path": ["admin", "settings", "social-links"] } } },
+        { "name": "Create Social Link", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"platform\": \"Facebook\",\n  \"label\": \"Facebook\",\n  \"url\": \"https://facebook.com/patitascaminando\",\n  \"icon\": \"facebook\",\n  \"isActive\": true,\n  \"orderIndex\": 1\n}" }, "url": { "raw": "{{baseUrl}}/admin/settings/social-links", "host": ["{{baseUrl}}"], "path": ["admin", "settings", "social-links"] } } },
+        { "name": "Update Social Link", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"isActive\": true\n}" }, "url": { "raw": "{{baseUrl}}/admin/settings/social-links/{{socialLinkId}}", "host": ["{{baseUrl}}"], "path": ["admin", "settings", "social-links", "{{socialLinkId}}"] } } },
+        { "name": "Delete Social Link", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/settings/social-links/{{socialLinkId}}", "host": ["{{baseUrl}}"], "path": ["admin", "settings", "social-links", "{{socialLinkId}}"] } } },
+        { "name": "List FAQs", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/settings/faqs", "host": ["{{baseUrl}}"], "path": ["admin", "settings", "faqs"] } } },
+        { "name": "Create FAQ", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"question\": \"Como puedo adoptar?\",\n  \"answer\": \"Completa el formulario y el equipo se comunicara contigo.\",\n  \"category\": \"adopciones\",\n  \"isActive\": true,\n  \"orderIndex\": 1\n}" }, "url": { "raw": "{{baseUrl}}/admin/settings/faqs", "host": ["{{baseUrl}}"], "path": ["admin", "settings", "faqs"] } } },
+        { "name": "Update FAQ", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"answer\": \"Completa el formulario y espera el contacto del equipo.\"\n}" }, "url": { "raw": "{{baseUrl}}/admin/settings/faqs/{{faqId}}", "host": ["{{baseUrl}}"], "path": ["admin", "settings", "faqs", "{{faqId}}"] } } },
+        { "name": "Delete FAQ", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/settings/faqs/{{faqId}}", "host": ["{{baseUrl}}"], "path": ["admin", "settings", "faqs", "{{faqId}}"] } } }
+      ]
+    },
+    {
+      "name": "Admin - Media",
+      "item": [
+        { "name": "List Media", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/media", "host": ["{{baseUrl}}"], "path": ["admin", "media"] } } },
+        {
+          "name": "Upload Media",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": [] },
+                { "key": "altText", "value": "Animal rescatado", "type": "text" },
+                { "key": "mediaType", "value": "image", "type": "text" },
+                { "key": "folder", "value": "animals", "type": "text" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/admin/media/upload", "host": ["{{baseUrl}}"], "path": ["admin", "media", "upload"] }
+          }
+        },
+        { "name": "Update Media", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"altText\": \"Foto actualizada\",\n  \"mediaType\": \"image\"\n}" }, "url": { "raw": "{{baseUrl}}/admin/media/{{mediaId}}", "host": ["{{baseUrl}}"], "path": ["admin", "media", "{{mediaId}}"] } } },
+        { "name": "Delete Media", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/media/{{mediaId}}", "host": ["{{baseUrl}}"], "path": ["admin", "media", "{{mediaId}}"] } } }
+      ]
+    },
+    {
+      "name": "Admin - Users",
+      "item": [
+        {
+          "name": "Create Operator",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"operador@example.com\",\n  \"password\": \"Cambiar123!\",\n  \"firstNames\": \"Operador\",\n  \"lastNames\": \"Patitas\",\n  \"phone\": \"0999999999\"\n}" },
+            "url": { "raw": "{{baseUrl}}/admin/users/operators", "host": ["{{baseUrl}}"], "path": ["admin", "users", "operators"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        { "name": "Get My Profile", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/users/me/profile", "host": ["{{baseUrl}}"], "path": ["users", "me", "profile"] } } },
+        { "name": "Update My Profile", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"firstNames\": \"Dayana\",\n  \"lastNames\": \"Castillo\",\n  \"phone\": \"0999999999\"\n}" }, "url": { "raw": "{{baseUrl}}/users/me/profile", "host": ["{{baseUrl}}"], "path": ["users", "me", "profile"] } } },
+        { "name": "My Adoption Applications", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/adoptions/applications/me", "host": ["{{baseUrl}}"], "path": ["adoptions", "applications", "me"] } } },
+        { "name": "Create Adoption Application Authenticated", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"firstNames\": \"Dayana\",\n  \"lastNames\": \"Castillo\",\n  \"phone\": \"0999999999\",\n  \"email\": \"dayana@example.com\",\n  \"desiredAnimalDescription\": \"Gatito joven\",\n  \"adoptionReason\": \"Tengo experiencia cuidando animales\",\n  \"additionalMessage\": \"Disponible para entrevista\",\n  \"dataProcessingAccepted\": true\n}" }, "url": { "raw": "{{baseUrl}}/adoptions/applications", "host": ["{{baseUrl}}"], "path": ["adoptions", "applications"] } } }
+      ]
+    },
+    {
+      "name": "Admin - Identity",
+      "item": [
+        { "name": "List Avatar Options", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/identity/avatar-options", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "avatar-options"] } } },
+        { "name": "Create Avatar Option", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"key\": \"default\",\n  \"name\": \"Default\",\n  \"imageUrl\": \"https://example.com/avatar.png\",\n  \"isDefault\": true,\n  \"isActive\": true,\n  \"orderIndex\": 1\n}" }, "url": { "raw": "{{baseUrl}}/admin/identity/avatar-options", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "avatar-options"] } } },
+        { "name": "Update Avatar Option", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Default updated\"\n}" }, "url": { "raw": "{{baseUrl}}/admin/identity/avatar-options/{{avatarId}}", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "avatar-options", "{{avatarId}}"] } } },
+        { "name": "Delete Avatar Option", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/identity/avatar-options/{{avatarId}}", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "avatar-options", "{{avatarId}}"] } } },
+        { "name": "List Badges", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/identity/badges", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "badges"] } } },
+        { "name": "Create Badge", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"key\": \"adopter\",\n  \"name\": \"Adoptante\",\n  \"description\": \"Persona que adopto\",\n  \"icon\": \"heart\",\n  \"isActive\": true,\n  \"orderIndex\": 1\n}" }, "url": { "raw": "{{baseUrl}}/admin/identity/badges", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "badges"] } } },
+        { "name": "Update Badge", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Adoptante responsable\"\n}" }, "url": { "raw": "{{baseUrl}}/admin/identity/badges/{{badgeId}}", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "badges", "{{badgeId}}"] } } },
+        { "name": "Delete Badge", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/identity/badges/{{badgeId}}", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "badges", "{{badgeId}}"] } } },
+        { "name": "Get User Badges", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/identity/users/{{userId}}/badges", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "users", "{{userId}}", "badges"] } } },
+        { "name": "Assign User Badge", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"badgeId\": \"{{badgeId}}\",\n  \"sourceModule\": \"adoptions\",\n  \"sourceId\": \"{{adoptionApplicationId}}\"\n}" }, "url": { "raw": "{{baseUrl}}/admin/identity/users/badges", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "users", "badges"] } } },
+        { "name": "Remove User Badge", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/identity/users/badges/{{userBadgeId}}", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "users", "badges", "{{userBadgeId}}"] } } },
+        { "name": "List Roles", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/identity/roles", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "roles"] } } },
+        { "name": "List Permissions", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/identity/permissions", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "permissions"] } } },
+        { "name": "Get Role Permissions", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/identity/roles/{{roleKey}}/permissions", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "roles", "{{roleKey}}", "permissions"] } } },
+        { "name": "Assign Role Permission", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"permissionKey\": \"{{permissionKey}}\"\n}" }, "url": { "raw": "{{baseUrl}}/admin/identity/roles/{{roleKey}}/permissions", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "roles", "{{roleKey}}", "permissions"] } } },
+        { "name": "Remove Role Permission", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/admin/identity/roles/{{roleKey}}/permissions/{{permissionKey}}", "host": ["{{baseUrl}}"], "path": ["admin", "identity", "roles", "{{roleKey}}", "permissions", "{{permissionKey}}"] } } }
+      ]
+    }
+  ]
+}
