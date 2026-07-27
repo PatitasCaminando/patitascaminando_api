@@ -22,7 +22,8 @@
     { "key": "animalId", "value": "" },
     { "key": "animalImagePath", "value": "animals/luna-2.jpg" },
     { "key": "adoptionApplicationId", "value": "" },
-    { "key": "donationOfferId", "value": "" }
+    { "key": "donationOfferId", "value": "" },
+    { "key": "notificationId", "value": "" }
   ],
   "item": [
     {
@@ -351,6 +352,44 @@
               "raw": "{{baseUrl}}/admin/donations/offers/{{donationOfferId}}/status",
               "host": ["{{baseUrl}}"],
               "path": ["admin", "donations", "offers", "{{donationOfferId}}", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Notifications",
+      "item": [
+        {
+          "name": "List My Notifications",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notifications"]
+            }
+          }
+        },
+        {
+          "name": "Get My Notification",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/notifications/{{notificationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notifications", "{{notificationId}}"]
+            }
+          }
+        },
+        {
+          "name": "Mark Notification As Read",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/admin/notifications/{{notificationId}}/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "notifications", "{{notificationId}}", "read"]
             }
           }
         }

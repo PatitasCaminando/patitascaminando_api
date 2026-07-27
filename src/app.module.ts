@@ -17,6 +17,9 @@ import { LoginUserUseCase } from './application/use-cases/auth/login-user';
 import { CreateDonationOfferUseCase } from './application/use-cases/donations/create-donation-offer';
 import { GetAdminDonationOffersUseCase } from './application/use-cases/donations/get-admin-donation-offers';
 import { UpdateDonationStatusUseCase } from './application/use-cases/donations/update-donation-status';
+import { GetAdminNotificationUseCase } from './application/use-cases/notifications/get-admin-notification';
+import { GetAdminNotificationsUseCase } from './application/use-cases/notifications/get-admin-notifications';
+import { MarkNotificationAsReadUseCase } from './application/use-cases/notifications/mark-notification-as-read';
 import { CreateSiteSectionUseCase } from './application/use-cases/site-sections/create-site-section';
 import { DeleteSiteSectionUseCase } from './application/use-cases/site-sections/delete-site-section';
 import { GetAdminSiteSectionsUseCase } from './application/use-cases/site-sections/get-admin-site-sections';
@@ -26,11 +29,13 @@ import { ADOPTION_REPOSITORY } from './domain/ports/output/adoption-repository';
 import { ANIMAL_REPOSITORY } from './domain/ports/output/animal-repository';
 import { AUTH_REPOSITORY } from './domain/ports/output/auth-repository';
 import { DONATION_REPOSITORY } from './domain/ports/output/donation-repository';
+import { NOTIFICATION_REPOSITORY } from './domain/ports/output/notification-repository';
 import { SITE_SECTION_REPOSITORY } from './domain/ports/output/site-section-repository';
 import { USER_REPOSITORY } from './domain/ports/output/user-repository';
 import { AdminAdoptionsController } from './infrastructure/controllers/admin/adoptions';
 import { AdminAnimalsController } from './infrastructure/controllers/admin/animals';
 import { AdminDonationsController } from './infrastructure/controllers/admin/donations';
+import { AdminNotificationsController } from './infrastructure/controllers/admin/notifications';
 import { AdminSiteSectionsController } from './infrastructure/controllers/admin/site-sections';
 import { AdminUsersController } from './infrastructure/controllers/admin/users';
 import { AuthController } from './infrastructure/controllers/auth';
@@ -44,6 +49,7 @@ import { AdoptionSupabaseRepository } from './infrastructure/persistence/supabas
 import { AnimalSupabaseRepository } from './infrastructure/persistence/supabase/repositories/animal-supabase';
 import { AuthSupabaseRepository } from './infrastructure/persistence/supabase/repositories/auth-supabase';
 import { DonationSupabaseRepository } from './infrastructure/persistence/supabase/repositories/donation-supabase';
+import { NotificationSupabaseRepository } from './infrastructure/persistence/supabase/repositories/notification-supabase';
 import { SiteSectionSupabaseRepository } from './infrastructure/persistence/supabase/repositories/site-section-supabase';
 import { UserSupabaseRepository } from './infrastructure/persistence/supabase/repositories/user-supabase';
 import { SupabaseModule } from './infrastructure/persistence/supabase/supabase.module';
@@ -66,6 +72,7 @@ import { SupabaseModule } from './infrastructure/persistence/supabase/supabase.m
     AdminAdoptionsController,
     PublicDonationsController,
     AdminDonationsController,
+    AdminNotificationsController,
   ],
   providers: [
     CreateOperatorUseCase,
@@ -90,6 +97,9 @@ import { SupabaseModule } from './infrastructure/persistence/supabase/supabase.m
     CreateDonationOfferUseCase,
     GetAdminDonationOffersUseCase,
     UpdateDonationStatusUseCase,
+    GetAdminNotificationsUseCase,
+    GetAdminNotificationUseCase,
+    MarkNotificationAsReadUseCase,
     SupabaseAuthGuard,
     RolesPermissionsGuard,
     {
@@ -115,6 +125,10 @@ import { SupabaseModule } from './infrastructure/persistence/supabase/supabase.m
     {
       provide: DONATION_REPOSITORY,
       useClass: DonationSupabaseRepository,
+    },
+    {
+      provide: NOTIFICATION_REPOSITORY,
+      useClass: NotificationSupabaseRepository,
     },
   ],
 })

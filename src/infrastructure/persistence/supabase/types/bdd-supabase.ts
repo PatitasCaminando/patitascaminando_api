@@ -327,6 +327,28 @@ export type DonationOfferRow = {
   row_version: number;
 };
 
+export type NotificationRow = {
+  id: string;
+  recipient_user_id: string;
+  form_type: 'adopcion' | 'donacion';
+  adoption_application_id: string | null;
+  donation_offer_id: string | null;
+  person_name: string;
+  title: string;
+  message: string;
+  is_read: boolean;
+  read_at: string | null;
+  recipient_email: string;
+  email_subject: string;
+  email_body: string;
+  email_status: 'pendiente' | 'enviado' | 'fallido';
+  email_attempt_count: number;
+  email_last_attempt_at: string | null;
+  email_sent_at: string | null;
+  email_error: string | null;
+  created_at: string;
+};
+
 export type VolunteerRequirementRow = {
   id: string;
   title: string;
