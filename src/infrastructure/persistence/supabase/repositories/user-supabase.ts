@@ -90,14 +90,8 @@ export class UserSupabaseRepository implements UserRepositoryPort {
       'adoptions.manage',
       'donations.manage',
       'notifications.manage',
-      'media.manage',
     ];
-    const adminPermissions = [
-      ...operatorPermissions,
-      'users.manage',
-      'settings.manage',
-      'landing.manage',
-    ];
+    const adminPermissions = [...operatorPermissions, 'users.manage'];
 
     return (role === 'admin' ? adminPermissions : operatorPermissions).map(
       (key) => ({
