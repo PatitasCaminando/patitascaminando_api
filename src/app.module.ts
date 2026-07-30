@@ -14,6 +14,7 @@ import { GetPublicAnimalsUseCase } from './application/use-cases/animals/get-pub
 import { UpdateAnimalUseCase } from './application/use-cases/animals/update-animal';
 import { GetCurrentUserUseCase } from './application/use-cases/auth/get-current-user';
 import { LoginUserUseCase } from './application/use-cases/auth/login-user';
+import { RequestPasswordResetUseCase } from './application/use-cases/auth/request-password-reset';
 import { CreateDonationOfferUseCase } from './application/use-cases/donations/create-donation-offer';
 import { GetAdminDonationOffersUseCase } from './application/use-cases/donations/get-admin-donation-offers';
 import { UpdateDonationStatusUseCase } from './application/use-cases/donations/update-donation-status';
@@ -77,6 +78,7 @@ import { SupabaseModule } from './infrastructure/persistence/supabase/supabase.m
   providers: [
     CreateOperatorUseCase,
     LoginUserUseCase,
+    RequestPasswordResetUseCase,
     GetCurrentUserUseCase,
     GetPublicSiteSectionsUseCase,
     GetAdminSiteSectionsUseCase,

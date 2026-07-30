@@ -8,6 +8,14 @@ export interface LoginUserInput {
   password: string;
 }
 
+export interface RequestPasswordResetInput {
+  email: string;
+}
+
+export interface PasswordResetRequestResult {
+  message: string;
+}
+
 export interface CreateOperatorInput {
   email: string;
   password: string;
@@ -19,5 +27,8 @@ export interface CreateOperatorInput {
 
 export interface AuthRepositoryPort {
   login(input: LoginUserInput): Promise<AuthSession>;
+  requestPasswordReset(
+    input: RequestPasswordResetInput,
+  ): Promise<PasswordResetRequestResult>;
   createOperator(input: CreateOperatorInput): Promise<RegisteredUser>;
 }

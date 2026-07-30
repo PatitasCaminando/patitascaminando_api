@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { SupabaseClient } from '@supabase/supabase-js';
 import type { AuthSession } from '../../../../domain/models/auth/auth-session';
 import type { RegisteredUser } from '../../../../domain/models/auth/registered-user';
@@ -12,6 +13,8 @@ import type {
   AuthRepositoryPort,
   CreateOperatorInput,
   LoginUserInput,
+  PasswordResetRequestResult,
+  RequestPasswordResetInput,
 } from '../../../../domain/ports/output/auth-repository';
 import {
   SUPABASE_ADMIN_CLIENT,
@@ -25,6 +28,7 @@ export class AuthSupabaseRepository implements AuthRepositoryPort {
     private readonly supabaseAdmin: SupabaseClient,
     @Inject(SUPABASE_PUBLIC_CLIENT)
     private readonly supabasePublic: SupabaseClient,
+    private readonly config: ConfigService,
   ) {}
 
   async createOperator(input: CreateOperatorInput): Promise<RegisteredUser> {
@@ -60,6 +64,36 @@ export class AuthSupabaseRepository implements AuthRepositoryPort {
         email: data.user.email ?? null,
       },
     };
+  }
+
+  async requestPasswordReset(
+    input: RequestPasswordResetInput,
+  ): Promise<PasswordResetRequestResult> {
+    const message =
+      'Si el correo ingresado esta asociado a una cuenta activa, recibira las instrucciones para restablecer su contrasena.';
+
+    const { data: isActiveStaff, error: validationError } =
+      await this.supabaseAdmin.rpc('is_active_staff_email', {
+        p_email: input.email,
+      });
+
+    if (validationError) {
+      throw new InternalServerErrorException(validationError.message);
+    }
+
+    if (isActiveStaff === true) {
+      const redirectTo = this.config.get<string>('PASSWORD_RESET_REDIRECT_URL');
+      const { error } = await this.supabasePublic.auth.resetPasswordForEmail(
+        input.email,
+        redirectTo ? { redirectTo } : undefined,
+      );
+
+      if (error) {
+        return { message };
+      }
+    }
+
+    return { message };
   }
 
   private async createAuthUser(input: {
