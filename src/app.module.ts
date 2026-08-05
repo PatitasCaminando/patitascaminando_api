@@ -16,6 +16,7 @@ import { GetAdminAnimalsUseCase } from './application/use-cases/animals/get-admi
 import { GetPublicAnimalBySlugUseCase } from './application/use-cases/animals/get-public-animal-by-slug';
 import { GetPublicAnimalsUseCase } from './application/use-cases/animals/get-public-animals';
 import { UpdateAnimalUseCase } from './application/use-cases/animals/update-animal';
+import { UploadAnimalImageUseCase } from './application/use-cases/animals/upload-animal-image';
 import { GetCurrentUserUseCase } from './application/use-cases/auth/get-current-user';
 import { LoginUserUseCase } from './application/use-cases/auth/login-user';
 import { RequestPasswordResetUseCase } from './application/use-cases/auth/request-password-reset';
@@ -98,6 +99,7 @@ import { SupabaseModule } from './infrastructure/persistence/supabase/supabase.m
     GetAdminAnimalsUseCase,
     CreateAnimalUseCase,
     UpdateAnimalUseCase,
+    UploadAnimalImageUseCase,
     DeleteAnimalUseCase,
     AddAnimalImageUseCase,
     DeleteAnimalImageUseCase,

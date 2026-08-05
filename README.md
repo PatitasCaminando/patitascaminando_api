@@ -39,6 +39,8 @@ SUPABASE_URL=
 SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 PASSWORD_RESET_REDIRECT_URL=http://localhost:5173/reset-password
+SUPABASE_ANIMAL_IMAGES_BUCKET=animals
+MAX_ANIMAL_IMAGE_SIZE_MB=5
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` es privada. No debe subirse al repositorio ni usarse desde el frontend.
@@ -456,6 +458,8 @@ Body:
 }
 ```
 
+Si la imagen se sube desde el backend, primero usar `POST /admin/animals/images/upload` y enviar la ruta devuelta en `photoPaths`.
+
 #### PATCH /admin/animals/:id
 
 Actualiza datos, estado, visibilidad o fotos de un animal.
@@ -463,6 +467,29 @@ Actualiza datos, estado, visibilidad o fotos de un animal.
 #### DELETE /admin/animals/:id
 
 Archiva un animal. La API no hace borrado fisico; cambia estado y visibilidad.
+
+#### POST /admin/animals/images/upload
+
+Sube una imagen desde el backoffice antes de crear el animal. Devuelve una ruta para usarla en `photoPaths`.
+
+Request:
+
+```txt
+Content-Type: multipart/form-data
+Campo: file
+Formatos: JPG, PNG, WEBP
+Tamano maximo: MAX_ANIMAL_IMAGE_SIZE_MB
+```
+
+Respuesta:
+
+```json
+{
+  "mediaId": "animals/pending/<archivo>.jpg",
+  "bucket": "animals",
+  "path": "pending/<archivo>.jpg"
+}
+```
 
 #### POST /admin/animals/:id/images
 
@@ -479,6 +506,31 @@ Body:
 ```
 
 Nota: `mediaId` representa la ruta almacenada en Supabase Storage.
+
+#### POST /admin/animals/:id/images/upload
+
+Sube una imagen desde el backoffice al bucket de Supabase Storage configurado en `SUPABASE_ANIMAL_IMAGES_BUCKET` y agrega la ruta resultante a `animals.photo_paths`.
+
+Request:
+
+```txt
+Content-Type: multipart/form-data
+Campo: file
+Formatos: JPG, PNG, WEBP
+Tamano maximo: MAX_ANIMAL_IMAGE_SIZE_MB
+```
+
+Respuesta:
+
+```json
+{
+  "id": "animals/<animalId>/<archivo>.jpg",
+  "animalId": "<animalId>",
+  "mediaId": "animals/<animalId>/<archivo>.jpg",
+  "isPrimary": false,
+  "orderIndex": 1
+}
+```
 
 #### DELETE /admin/animals/:id/images/:imageId
 

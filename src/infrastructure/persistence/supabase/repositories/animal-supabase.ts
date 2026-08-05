@@ -4,7 +4,9 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { randomUUID } from 'crypto';
 import type {
   Animal,
   AnimalImage,
@@ -13,7 +15,9 @@ import type {
   AddAnimalImageInput,
   AnimalRepositoryPort,
   CreateAnimalInput,
+  UploadedAnimalImage,
   UpdateAnimalInput,
+  UploadAnimalImageInput,
 } from '../../../../domain/ports/output/animal-repository';
 import type {
   PaginatedResult,
@@ -27,6 +31,7 @@ export class AnimalSupabaseRepository implements AnimalRepositoryPort {
   constructor(
     @Inject(SUPABASE_ADMIN_CLIENT)
     private readonly supabase: SupabaseClient,
+    private readonly config: ConfigService,
   ) {}
 
   async findPublicAnimals(
@@ -158,6 +163,44 @@ export class AnimalSupabaseRepository implements AnimalRepositoryPort {
     return this.toImage(animalId, input.mediaId, photoPaths.length - 1);
   }
 
+  async uploadImage(
+    animalId: string,
+    input: UploadAnimalImageInput,
+  ): Promise<AnimalImage> {
+    await this.findAdminAnimalById(animalId);
+
+    const uploadedImage = await this.uploadImageFile(input, animalId);
+
+    return this.addImage(animalId, {
+      mediaId: uploadedImage.mediaId,
+    });
+  }
+
+  async uploadImageFile(
+    input: UploadAnimalImageInput,
+    folder = 'pending',
+  ): Promise<UploadedAnimalImage> {
+    const bucket =
+      this.config.get<string>('SUPABASE_ANIMAL_IMAGES_BUCKET') ?? 'animals';
+    const extension = this.extensionForMimeType(input.mimeType);
+    const objectPath = `${folder}/${Date.now()}-${randomUUID()}.${extension}`;
+
+    const { error } = await this.supabase.storage
+      .from(bucket)
+      .upload(objectPath, input.buffer, {
+        contentType: input.mimeType,
+        upsert: false,
+      });
+
+    if (error) throw new InternalServerErrorException(error.message);
+
+    return {
+      mediaId: `${bucket}/${objectPath}`,
+      bucket,
+      path: objectPath,
+    };
+  }
+
   async deleteImage(animalId: string, imageId: string): Promise<void> {
     const animal = await this.findAdminAnimalById(animalId);
     await this.updateAnimal(animalId, {
@@ -246,6 +289,16 @@ export class AnimalSupabaseRepository implements AnimalRepositoryPort {
       total,
       totalPages: Math.ceil(total / pagination.limit),
     };
+  }
+
+  private extensionForMimeType(mimeType: string): string {
+    const extensions: Record<string, string> = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+    };
+
+    return extensions[mimeType] ?? 'bin';
   }
 
   private readonly animalSelect =

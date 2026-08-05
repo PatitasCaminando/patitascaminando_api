@@ -48,6 +48,19 @@ export interface AddAnimalImageInput {
   orderIndex?: number;
 }
 
+export interface UploadAnimalImageInput {
+  originalName: string;
+  mimeType: string;
+  size: number;
+  buffer: Buffer;
+}
+
+export interface UploadedAnimalImage {
+  mediaId: string;
+  bucket: string;
+  path: string;
+}
+
 export interface AnimalRepositoryPort {
   findPublicAnimals(
     pagination?: PaginationInput,
@@ -58,5 +71,10 @@ export interface AnimalRepositoryPort {
   updateAnimal(id: string, input: UpdateAnimalInput): Promise<Animal>;
   deleteAnimal(id: string): Promise<void>;
   addImage(animalId: string, input: AddAnimalImageInput): Promise<AnimalImage>;
+  uploadImageFile(input: UploadAnimalImageInput): Promise<UploadedAnimalImage>;
+  uploadImage(
+    animalId: string,
+    input: UploadAnimalImageInput,
+  ): Promise<AnimalImage>;
   deleteImage(animalId: string, imageId: string): Promise<void>;
 }

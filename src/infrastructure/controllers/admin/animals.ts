@@ -1,5 +1,6 @@
 import {
   Body,
+  BadRequestException,
   Controller,
   Delete,
   Get,
@@ -8,8 +9,11 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AddAnimalImageDto } from '../../../application/dto/animals/add-animal-image';
 import { CreateAnimalDto } from '../../../application/dto/animals/create-animal';
 import { UpdateAnimalDto } from '../../../application/dto/animals/update-animal';
@@ -20,16 +24,25 @@ import { DeleteAnimalImageUseCase } from '../../../application/use-cases/animals
 import { DeleteAnimalUseCase } from '../../../application/use-cases/animals/delete-animal';
 import { GetAdminAnimalsUseCase } from '../../../application/use-cases/animals/get-admin-animals';
 import { UpdateAnimalUseCase } from '../../../application/use-cases/animals/update-animal';
+import { UploadAnimalImageUseCase } from '../../../application/use-cases/animals/upload-animal-image';
 import type { AuthenticatedUser } from '../../../domain/models/auth/authenticated-user';
 import type {
   Animal,
   AnimalImage,
 } from '../../../domain/models/animals/animal';
 import type { PaginatedResult } from '../../../domain/models/common/pagination';
+import type { UploadedAnimalImage } from '../../../domain/ports/output/animal-repository';
 import { CurrentUser } from '../../http/auth/decorators/current-user';
 import { Permissions } from '../../http/auth/decorators/permissions';
 import { RolesPermissionsGuard } from '../../http/auth/guards/roles-permissions';
 import { SupabaseAuthGuard } from '../../http/auth/guards/supabase-auth';
+
+type UploadedImageFile = {
+  originalname: string;
+  mimetype: string;
+  size: number;
+  buffer: Buffer;
+};
 
 @Controller('admin/animals')
 @UseGuards(SupabaseAuthGuard, RolesPermissionsGuard)
@@ -41,6 +54,7 @@ export class AdminAnimalsController {
     private readonly updateAnimalUseCase: UpdateAnimalUseCase,
     private readonly deleteAnimalUseCase: DeleteAnimalUseCase,
     private readonly addAnimalImageUseCase: AddAnimalImageUseCase,
+    private readonly uploadAnimalImageUseCase: UploadAnimalImageUseCase,
     private readonly deleteAnimalImageUseCase: DeleteAnimalImageUseCase,
   ) {}
 
@@ -80,6 +94,41 @@ export class AdminAnimalsController {
     @Body() body: AddAnimalImageDto,
   ): Promise<AnimalImage> {
     return this.addAnimalImageUseCase.execute(animalId, body);
+  }
+
+  @Post('images/upload')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadImageBeforeCreate(
+    @UploadedFile() file?: UploadedImageFile,
+  ): Promise<UploadedAnimalImage> {
+    if (!file) {
+      throw new BadRequestException('Debe enviar una imagen en el campo file.');
+    }
+
+    return this.uploadAnimalImageUseCase.executeWithoutAnimal({
+      originalName: file.originalname,
+      mimeType: file.mimetype,
+      size: file.size,
+      buffer: file.buffer,
+    });
+  }
+
+  @Post(':id/images/upload')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadImage(
+    @Param('id') animalId: string,
+    @UploadedFile() file?: UploadedImageFile,
+  ): Promise<AnimalImage> {
+    if (!file) {
+      throw new BadRequestException('Debe enviar una imagen en el campo file.');
+    }
+
+    return this.uploadAnimalImageUseCase.execute(animalId, {
+      originalName: file.originalname,
+      mimeType: file.mimetype,
+      size: file.size,
+      buffer: file.buffer,
+    });
   }
 
   @Delete(':id/images/:imageId')

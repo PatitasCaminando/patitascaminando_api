@@ -569,6 +569,49 @@
           }
         },
         {
+          "name": "Subir imagen antes de crear animal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.mediaId) {",
+                  "  pm.collectionVariables.set('animalImagePath', json.mediaId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/animals/images/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "animals",
+                "images",
+                "upload"
+              ]
+            }
+          }
+        },
+        {
           "name": "Crear animal",
           "event": [
             {
@@ -594,7 +637,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Luna\",\n  \"species\": \"perro\",\n  \"sex\": \"hembra\",\n  \"size\": \"mediano\",\n  \"approximateAge\": \"2 anos\",\n  \"status\": \"disponible\",\n  \"description\": \"Perrita sociable y tranquila\",\n  \"generalCondition\": \"Buen estado general\",\n  \"photoPaths\": [\"animals/luna-1.jpg\"],\n  \"isActive\": true,\n  \"isPubliclyVisible\": true\n}"
+              "raw": "{\n  \"name\": \"Luna\",\n  \"species\": \"perro\",\n  \"sex\": \"hembra\",\n  \"size\": \"mediano\",\n  \"approximateAge\": \"2 anos\",\n  \"status\": \"disponible\",\n  \"description\": \"Perrita sociable y tranquila\",\n  \"generalCondition\": \"Buen estado general\",\n  \"photoPaths\": [\n    \"{{animalImagePath}}\"\n  ],\n  \"isActive\": true,\n  \"isPubliclyVisible\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/animals",
@@ -676,6 +719,50 @@
                 "animals",
                 "{{animalId}}",
                 "images"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Subir imagen de animal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.id) {",
+                  "  pm.collectionVariables.set('animalImagePath', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/animals/{{animalId}}/images/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "animals",
+                "{{animalId}}",
+                "images",
+                "upload"
               ]
             }
           }
