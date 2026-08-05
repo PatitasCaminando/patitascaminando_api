@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CreateOperatorUseCase } from './application/use-cases/admin/create-operator';
+import { GetOperatorUseCase } from './application/use-cases/admin/get-operator';
+import { GetOperatorsUseCase } from './application/use-cases/admin/get-operators';
+import { UpdateOperatorUseCase } from './application/use-cases/admin/update-operator';
+import { UpdateOperatorStatusUseCase } from './application/use-cases/admin/update-operator-status';
 import { CreateAdoptionApplicationUseCase } from './application/use-cases/adoptions/create-adoption-application';
 import { GetAdminAdoptionApplicationsUseCase } from './application/use-cases/adoptions/get-admin-adoption-applications';
 import { UpdateAdoptionStatusUseCase } from './application/use-cases/adoptions/update-adoption-status';
@@ -77,6 +81,10 @@ import { SupabaseModule } from './infrastructure/persistence/supabase/supabase.m
   ],
   providers: [
     CreateOperatorUseCase,
+    GetOperatorsUseCase,
+    GetOperatorUseCase,
+    UpdateOperatorUseCase,
+    UpdateOperatorStatusUseCase,
     LoginUserUseCase,
     RequestPasswordResetUseCase,
     GetCurrentUserUseCase,

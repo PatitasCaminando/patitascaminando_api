@@ -16,21 +16,65 @@
     ]
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:3000" },
-    { "key": "accessToken", "value": "" },
-    { "key": "siteSectionId", "value": "" },
-    { "key": "animalId", "value": "" },
-    { "key": "animalImagePath", "value": "animals/luna-2.jpg" },
-    { "key": "adoptionApplicationId", "value": "" },
-    { "key": "donationOfferId", "value": "" },
-    { "key": "notificationId", "value": "" }
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "siteSectionId",
+      "value": ""
+    },
+    {
+      "key": "animalId",
+      "value": ""
+    },
+    {
+      "key": "animalImagePath",
+      "value": "animals/luna-2.jpg"
+    },
+    {
+      "key": "adoptionApplicationId",
+      "value": ""
+    },
+    {
+      "key": "donationOfferId",
+      "value": ""
+    },
+    {
+      "key": "notificationId",
+      "value": ""
+    },
+    {
+      "key": "adminEmail",
+      "value": "patitascaminandouio@hotmail.com"
+    },
+    {
+      "key": "adminPassword",
+      "value": "fundacion_*Patitas"
+    },
+    {
+      "key": "operatorEmail",
+      "value": "operadorpatitas@hotmail.com"
+    },
+    {
+      "key": "operatorPassword",
+      "value": "rescate_*Patitas"
+    },
+    {
+      "key": "operatorId",
+      "value": ""
+    }
   ],
   "item": [
     {
-      "name": "Auth",
+      "name": "Autenticacion",
       "item": [
         {
-          "name": "Login Staff",
+          "name": "Iniciar sesion administrador",
           "event": [
             {
               "listen": "test",
@@ -46,22 +90,77 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@rescatistas.local\",\n  \"password\": \"Cambiar123!\"\n}"
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             }
           }
         },
         {
-          "name": "Request Password Reset",
+          "name": "Iniciar sesion operador",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.accessToken) {",
+                  "  pm.collectionVariables.set('accessToken', json.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{operatorEmail}}\",\n  \"password\": \"{{operatorPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Solicitar recuperacion de contrasena",
           "event": [
             {
               "listen": "test",
@@ -78,50 +177,74 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@rescatistas.local\"\n}"
+              "raw": "{\n  \"email\": \"{{adminEmail}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/forgot-password",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "forgot-password"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "forgot-password"
+              ]
             }
           }
         },
         {
-          "name": "Current Staff User",
+          "name": "Usuario autenticado actual",
           "request": {
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/auth/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
             }
           }
         }
       ]
     },
     {
-      "name": "Public",
+      "name": "Publico",
       "item": [
         {
-          "name": "Site Sections",
+          "name": "Listar secciones publicas",
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/public/site-sections",
-              "host": ["{{baseUrl}}"],
-              "path": ["public", "site-sections"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "public",
+                "site-sections"
+              ]
             }
           }
         },
         {
-          "name": "Animals",
+          "name": "Listar animales publicos",
           "event": [
             {
               "listen": "test",
@@ -137,29 +260,44 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/public/animals",
-              "host": ["{{baseUrl}}"],
-              "path": ["public", "animals"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "public",
+                "animals"
+              ]
             }
           }
         },
         {
-          "name": "Animal Detail",
+          "name": "Detalle de animal publico",
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/public/animals/{{animalId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["public", "animals", "{{animalId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "public",
+                "animals",
+                "{{animalId}}"
+              ]
             }
           }
         },
         {
-          "name": "Create Adoption Application",
+          "name": "Crear solicitud de adopcion",
           "event": [
             {
               "listen": "test",
@@ -175,22 +313,35 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"firstNames\": \"Dayana\",\n  \"lastNames\": \"Castillo\",\n  \"phone\": \"0999999999\",\n  \"email\": \"dayana@example.com\",\n  \"desiredAnimalDescription\": \"Perrito pequeno y tranquilo\",\n  \"adoptionReason\": \"Deseo brindar un hogar responsable\",\n  \"specificAnimalId\": \"{{animalId}}\",\n  \"additionalMessage\": \"Puedo coordinar una visita esta semana\",\n  \"dataProcessingAccepted\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/public/adoptions/applications",
-              "host": ["{{baseUrl}}"],
-              "path": ["public", "adoptions", "applications"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "public",
+                "adoptions",
+                "applications"
+              ]
             }
           }
         },
         {
-          "name": "Create Donation Offer",
+          "name": "Crear ofrecimiento de donacion",
           "event": [
             {
               "listen": "test",
@@ -206,27 +357,40 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"firstNames\": \"Dayana\",\n  \"lastNames\": \"Castillo\",\n  \"phone\": \"0999999999\",\n  \"email\": \"dayana@example.com\",\n  \"selectedItems\": [\"alimento_perros\", \"mantas\"],\n  \"approximateQuantity\": \"2 fundas\",\n  \"productName\": \"Alimento adulto\",\n  \"itemCondition\": \"Nuevo\",\n  \"expirationDate\": \"2026-12-31\",\n  \"deliveryAvailability\": \"Fines de semana\",\n  \"otherDescription\": \"\",\n  \"descriptionObservation\": \"Deseo donar alimento y mantas en buen estado\",\n  \"dataProcessingAccepted\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/public/donations/offers",
-              "host": ["{{baseUrl}}"],
-              "path": ["public", "donations", "offers"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "public",
+                "donations",
+                "offers"
+              ]
             }
           }
         }
       ]
     },
     {
-      "name": "Admin - Site Sections",
+      "name": "Admin - Contenido web",
       "item": [
         {
-          "name": "List Site Sections",
+          "name": "Listar secciones",
           "event": [
             {
               "listen": "test",
@@ -245,13 +409,18 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/admin/site-sections",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "site-sections"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "site-sections"
+              ]
             }
           }
         },
         {
-          "name": "Create Site Section",
+          "name": "Crear seccion",
           "event": [
             {
               "listen": "test",
@@ -268,52 +437,79 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"sectionKey\": \"contacto\",\n  \"title\": \"Contacto\",\n  \"content\": {\n    \"phone\": \"0999999999\",\n    \"whatsapp\": \"0999999999\",\n    \"email\": \"contacto@patitascaminando.local\",\n    \"service_area\": \"Zona de atencion reservada\"\n  },\n  \"isPublished\": true,\n  \"displayOrder\": 1\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/site-sections",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "site-sections"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "site-sections"
+              ]
             }
           }
         },
         {
-          "name": "Update Site Section",
+          "name": "Actualizar seccion",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"title\": \"Contacto actualizado\",\n  \"isPublished\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/site-sections/{{siteSectionId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "site-sections", "{{siteSectionId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "site-sections",
+                "{{siteSectionId}}"
+              ]
             }
           }
         },
         {
-          "name": "Delete Site Section",
+          "name": "Eliminar seccion",
           "request": {
             "method": "DELETE",
             "url": {
               "raw": "{{baseUrl}}/admin/site-sections/{{siteSectionId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "site-sections", "{{siteSectionId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "site-sections",
+                "{{siteSectionId}}"
+              ]
             }
           }
         }
       ]
     },
     {
-      "name": "Admin - Animals",
+      "name": "Admin - Animales",
       "item": [
         {
-          "name": "List Animals",
+          "name": "Listar animales",
           "event": [
             {
               "listen": "test",
@@ -332,13 +528,18 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/admin/animals",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "animals"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "animals"
+              ]
             }
           }
         },
         {
-          "name": "Create Animal",
+          "name": "Crear animal",
           "event": [
             {
               "listen": "test",
@@ -355,79 +556,126 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Luna\",\n  \"species\": \"perro\",\n  \"sex\": \"hembra\",\n  \"size\": \"mediano\",\n  \"approximateAge\": \"2 anos\",\n  \"status\": \"disponible\",\n  \"description\": \"Perrita sociable y tranquila\",\n  \"generalCondition\": \"Buen estado general\",\n  \"photoPaths\": [\"animals/luna-1.jpg\"],\n  \"isActive\": true,\n  \"isPubliclyVisible\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/animals",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "animals"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "animals"
+              ]
             }
           }
         },
         {
-          "name": "Update Animal",
+          "name": "Actualizar animal",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"en_proceso\",\n  \"isPubliclyVisible\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/animals/{{animalId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "animals", "{{animalId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "animals",
+                "{{animalId}}"
+              ]
             }
           }
         },
         {
-          "name": "Archive Animal",
+          "name": "Archivar animal",
           "request": {
             "method": "DELETE",
             "url": {
               "raw": "{{baseUrl}}/admin/animals/{{animalId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "animals", "{{animalId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "animals",
+                "{{animalId}}"
+              ]
             }
           }
         },
         {
-          "name": "Add Animal Image Path",
+          "name": "Agregar ruta de imagen",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"mediaId\": \"animals/luna-2.jpg\",\n  \"isPrimary\": false,\n  \"orderIndex\": 1\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/animals/{{animalId}}/images",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "animals", "{{animalId}}", "images"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "animals",
+                "{{animalId}}",
+                "images"
+              ]
             }
           }
         },
         {
-          "name": "Delete Animal Image Path",
+          "name": "Quitar ruta de imagen",
           "request": {
             "method": "DELETE",
             "url": {
               "raw": "{{baseUrl}}/admin/animals/{{animalId}}/images/{{animalImagePath}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "animals", "{{animalId}}", "images", "{{animalImagePath}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "animals",
+                "{{animalId}}",
+                "images",
+                "{{animalImagePath}}"
+              ]
             }
           }
         }
       ]
     },
     {
-      "name": "Admin - Adoptions",
+      "name": "Admin - Adopciones",
       "item": [
         {
-          "name": "List Adoption Applications",
+          "name": "Listar solicitudes de adopcion",
           "event": [
             {
               "listen": "test",
@@ -446,34 +694,53 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/admin/adoptions/applications",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "adoptions", "applications"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "adoptions",
+                "applications"
+              ]
             }
           }
         },
         {
-          "name": "Update Adoption Status",
+          "name": "Actualizar estado de adopcion",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"contactada\",\n  \"internalObservations\": \"Se contacto por telefono\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/adoptions/applications/{{adoptionApplicationId}}/status",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "adoptions", "applications", "{{adoptionApplicationId}}", "status"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "adoptions",
+                "applications",
+                "{{adoptionApplicationId}}",
+                "status"
+              ]
             }
           }
         }
       ]
     },
     {
-      "name": "Admin - Donations",
+      "name": "Admin - Donaciones",
       "item": [
         {
-          "name": "List Donation Offers",
+          "name": "Listar ofrecimientos de donacion",
           "event": [
             {
               "listen": "test",
@@ -492,34 +759,53 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/admin/donations/offers",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "donations", "offers"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "donations",
+                "offers"
+              ]
             }
           }
         },
         {
-          "name": "Update Donation Status",
+          "name": "Actualizar estado de donacion",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"contactada\",\n  \"internalObservations\": \"Se coordinara entrega\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/donations/offers/{{donationOfferId}}/status",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "donations", "offers", "{{donationOfferId}}", "status"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "donations",
+                "offers",
+                "{{donationOfferId}}",
+                "status"
+              ]
             }
           }
         }
       ]
     },
     {
-      "name": "Admin - Notifications",
+      "name": "Admin - Notificaciones",
       "item": [
         {
-          "name": "List My Notifications",
+          "name": "Listar mis notificaciones",
           "event": [
             {
               "listen": "test",
@@ -538,53 +824,202 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/admin/notifications",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "notifications"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "notifications"
+              ]
             }
           }
         },
         {
-          "name": "Get My Notification",
+          "name": "Ver mi notificacion",
           "request": {
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/admin/notifications/{{notificationId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "notifications", "{{notificationId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "notifications",
+                "{{notificationId}}"
+              ]
             }
           }
         },
         {
-          "name": "Mark Notification As Read",
+          "name": "Marcar notificacion como leida",
           "request": {
             "method": "PATCH",
             "url": {
               "raw": "{{baseUrl}}/admin/notifications/{{notificationId}}/read",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "notifications", "{{notificationId}}", "read"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "notifications",
+                "{{notificationId}}",
+                "read"
+              ]
             }
           }
         }
       ]
     },
     {
-      "name": "Admin - Staff",
+      "name": "Admin - Operadores",
       "item": [
         {
-          "name": "Create Operator",
+          "name": "Listar operadores",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (Array.isArray(json) && json[0]?.id) {",
+                  "  pm.collectionVariables.set('operatorId', json[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/operators",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "operators"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Ver operador",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/operators/{{operatorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "operators",
+                "{{operatorId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Actualizar operador",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"operador@example.com\",\n  \"password\": \"Cambiar123!\",\n  \"firstNames\": \"Operador\",\n  \"lastNames\": \"Patitas\",\n  \"phone\": \"0999999999\"\n}"
+              "raw": "{\n  \"firstNames\": \"Operador\",\n  \"lastNames\": \"Patitas\",\n  \"phone\": \"0999999999\",\n  \"receiveFormNotifications\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/operators/{{operatorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "operators",
+                "{{operatorId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Activar o desactivar operador",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/operators/{{operatorId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "operators",
+                "{{operatorId}}",
+                "status"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear operador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{operatorEmail}}\",\n  \"password\": \"{{operatorPassword}}\",\n  \"firstNames\": \"Operador\",\n  \"lastNames\": \"Patitas\",\n  \"phone\": \"0999999999\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/users/operators",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "users", "operators"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "operators"
+              ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.id) {",
+                  "  pm.collectionVariables.set('operatorId', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
         }
       ]
     }

@@ -2,15 +2,26 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
 import type { Permission } from '../../../../domain/models/access-control/permission';
 import type { Role } from '../../../../domain/models/access-control/role';
 import type { CurrentUser } from '../../../../domain/models/users/current-user';
+import type { Operator } from '../../../../domain/models/users/operator';
 import type { Profile } from '../../../../domain/models/users/profile';
-import type { UserRepositoryPort } from '../../../../domain/ports/output/user-repository';
+import type {
+  UpdateOperatorInput,
+  UserRepositoryPort,
+} from '../../../../domain/ports/output/user-repository';
 import { SUPABASE_ADMIN_CLIENT } from '../supabase.tokens';
 import type { StaffProfileRow } from '../types/bdd-supabase';
+
+type AuthUserSummary = {
+  id: string;
+  email?: string | null;
+  user_metadata?: Record<string, unknown>;
+};
 
 @Injectable()
 export class UserSupabaseRepository implements UserRepositoryPort {
@@ -60,6 +71,89 @@ export class UserSupabaseRepository implements UserRepositoryPort {
     return this.findProfileByUserId(userId);
   }
 
+  async findOperators(): Promise<Operator[]> {
+    const { data, error } = await this.supabase
+      .from('staff_profiles')
+      .select(this.staffSelect)
+      .eq('role', 'operator')
+      .order('created_at', { ascending: false })
+      .returns<StaffProfileRow[]>();
+
+    if (error) throw new InternalServerErrorException(error.message);
+
+    const authUsers = await this.findAuthUsersByIds(
+      (data ?? []).map((row) => row.id),
+    );
+
+    return (data ?? []).map((row) =>
+      this.toOperator(row, authUsers.get(row.id)),
+    );
+  }
+
+  async findOperatorById(id: string): Promise<Operator> {
+    const staffProfile = await this.findStaffProfileById(id);
+
+    if (!staffProfile || staffProfile.role !== 'operator') {
+      throw new NotFoundException('Operator not found');
+    }
+
+    const authUser = await this.findAuthUserById(id);
+    return this.toOperator(staffProfile, authUser);
+  }
+
+  async updateOperator(
+    id: string,
+    input: UpdateOperatorInput,
+  ): Promise<Operator> {
+    const staffProfile = await this.findStaffProfileById(id);
+
+    if (!staffProfile || staffProfile.role !== 'operator') {
+      throw new NotFoundException('Operator not found');
+    }
+
+    const staffUpdate: Partial<StaffProfileRow> = {};
+
+    if (input.isActive !== undefined) {
+      staffUpdate.is_active = input.isActive;
+    }
+
+    if (input.receiveFormNotifications !== undefined) {
+      staffUpdate.receive_form_notifications = input.receiveFormNotifications;
+    }
+
+    if (Object.keys(staffUpdate).length > 0) {
+      const { error } = await this.supabase
+        .from('staff_profiles')
+        .update(staffUpdate)
+        .eq('id', id)
+        .eq('role', 'operator');
+
+      if (error) throw new InternalServerErrorException(error.message);
+    }
+
+    if (
+      input.firstNames !== undefined ||
+      input.lastNames !== undefined ||
+      input.phone !== undefined
+    ) {
+      const authUser = await this.findAuthUserById(id);
+      const metadata = authUser?.user_metadata ?? {};
+
+      const { error } = await this.supabase.auth.admin.updateUserById(id, {
+        user_metadata: {
+          ...metadata,
+          first_names: input.firstNames ?? metadata.first_names ?? null,
+          last_names: input.lastNames ?? metadata.last_names ?? null,
+          phone: input.phone ?? metadata.phone ?? null,
+        },
+      });
+
+      if (error) throw new InternalServerErrorException(error.message);
+    }
+
+    return this.findOperatorById(id);
+  }
+
   private async findStaffProfileById(
     userId: string,
   ): Promise<StaffProfileRow | null> {
@@ -71,6 +165,39 @@ export class UserSupabaseRepository implements UserRepositoryPort {
 
     if (error) throw new InternalServerErrorException(error.message);
     return data ?? null;
+  }
+
+  private async findAuthUserById(id: string): Promise<AuthUserSummary | null> {
+    const { data, error } = await this.supabase.auth.admin.getUserById(id);
+
+    if (error) throw new InternalServerErrorException(error.message);
+    return data.user ?? null;
+  }
+
+  private async findAuthUsersByIds(
+    ids: string[],
+  ): Promise<Map<string, AuthUserSummary>> {
+    const authUsers = new Map<string, AuthUserSummary>();
+
+    if (ids.length === 0) {
+      return authUsers;
+    }
+
+    const { data, error } = await this.supabase.auth.admin.listUsers({
+      page: 1,
+      perPage: 1000,
+    });
+
+    if (error) throw new InternalServerErrorException(error.message);
+
+    const idSet = new Set(ids);
+    for (const user of data.users ?? []) {
+      if (idSet.has(user.id)) {
+        authUsers.set(user.id, user);
+      }
+    }
+
+    return authUsers;
   }
 
   private toRole(row: StaffProfileRow): Role {
@@ -118,6 +245,29 @@ export class UserSupabaseRepository implements UserRepositoryPort {
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     };
+  }
+
+  private toOperator(
+    row: StaffProfileRow,
+    authUser: AuthUserSummary | null | undefined,
+  ): Operator {
+    const metadata = authUser?.user_metadata ?? {};
+
+    return {
+      id: row.id,
+      email: authUser?.email ?? null,
+      firstNames: this.metadataString(metadata.first_names),
+      lastNames: this.metadataString(metadata.last_names),
+      phone: this.metadataString(metadata.phone),
+      isActive: row.is_active,
+      receiveFormNotifications: row.receive_form_notifications,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  }
+
+  private metadataString(value: unknown): string | null {
+    return typeof value === 'string' && value.length > 0 ? value : null;
   }
 
   private readonly staffSelect =

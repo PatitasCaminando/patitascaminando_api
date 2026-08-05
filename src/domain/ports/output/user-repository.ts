@@ -1,4 +1,5 @@
 import { CurrentUser } from '../../models/users/current-user';
+import { Operator } from '../../models/users/operator';
 import { Profile } from '../../models/users/profile';
 
 export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
@@ -13,6 +14,14 @@ export interface UpdateProfileInput {
   housingSector?: string;
 }
 
+export interface UpdateOperatorInput {
+  firstNames?: string;
+  lastNames?: string;
+  phone?: string;
+  isActive?: boolean;
+  receiveFormNotifications?: boolean;
+}
+
 export interface UserRepositoryPort {
   findCurrentUserById(user: {
     id: string;
@@ -23,4 +32,7 @@ export interface UserRepositoryPort {
     userId: string,
     input: UpdateProfileInput,
   ): Promise<Profile>;
+  findOperators(): Promise<Operator[]>;
+  findOperatorById(id: string): Promise<Operator>;
+  updateOperator(id: string, input: UpdateOperatorInput): Promise<Operator>;
 }

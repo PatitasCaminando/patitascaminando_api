@@ -522,7 +522,15 @@ Devuelve una notificacion especifica del usuario autenticado.
 
 Marca una notificacion como leida.
 
-### Admin - Staff
+### Admin - Operadores
+
+#### GET /admin/users/operators
+
+Lista los operadores registrados. Solo administrador.
+
+#### GET /admin/users/operators/:id
+
+Devuelve el detalle de un operador. Solo administrador.
 
 #### POST /admin/users/operators
 
@@ -546,22 +554,49 @@ Efecto:
 Crea usuario en Supabase Auth y perfil interno en staff_profiles con rol operator.
 ```
 
+#### PATCH /admin/users/operators/:id
+
+Actualiza datos basicos y configuracion del operador. Solo administrador.
+
+Body:
+
+```json
+{
+  "firstNames": "Operador",
+  "lastNames": "Patitas",
+  "phone": "0999999999",
+  "receiveFormNotifications": true
+}
+```
+
+#### PATCH /admin/users/operators/:id/status
+
+Activa o desactiva un operador. No elimina fisicamente la cuenta; actualiza `staff_profiles.is_active`.
+
+Body:
+
+```json
+{
+  "isActive": true
+}
+```
+
 ## Cumplimiento De Requisitos
 
 | Requisito | Estado | Evidencia |
 | --- | --- | --- |
 | RF-01 Contenido publico institucional | Cumple | `site_sections`, `GET /public/site-sections`, admin CRUD de secciones |
-| RF-02 Visualizacion publica de animales | Cumple | `GET /public/animals`, `GET /public/animals/:slug` |
-| RF-03 Gestion administrativa de animales | Cumple | `POST/PATCH/DELETE /admin/animals`, rutas de imagen en `photoPaths` |
-| RF-04 Solicitud publica de adopcion | Cumple | `POST /public/adoptions/applications` |
-| RF-05 Gestion administrativa de adopciones | Cumple | `GET /admin/adoptions/applications`, `PATCH /admin/adoptions/applications/:id/status` |
-| RF-06 Donaciones en especie | Cumple | `POST /public/donations/offers` |
-| RF-07 Gestion administrativa de donaciones | Cumple | `GET /admin/donations/offers`, `PATCH /admin/donations/offers/:id/status` |
-| RF-08 Notificaciones internas y control de correo | Cumple parcialmente | Notificaciones internas implementadas con tabla, triggers y endpoints. Campos de correo existen; falta worker SMTP si se exige envio real automatico. |
-| RF-09 Autenticacion de personal interno | Cumple | `POST /auth/login`, `GET /auth/me`, Supabase Auth |
-| RF-10 Recuperacion de contrasena | Documentado | Flujo con Supabase Auth desde frontend mediante `resetPasswordForEmail` y `updateUser` |
-| RF-11 Roles administrador y operador | Cumple | `staff_profiles.role`, guards, permisos fijos por rol |
-| RF-12 Creacion de operadores por administrador | Cumple | `POST /admin/users/operators` |
+| RF-02 Gestionar animales y contenido publico | Cumple | `POST/PATCH/DELETE /admin/animals`, `GET/POST/PATCH/DELETE /admin/site-sections` |
+| RF-03 Enviar solicitud de adopcion | Cumple | `POST /public/adoptions/applications` |
+| RF-04 Confirmar envio de adopcion | Frontend | El API devuelve el registro creado; el mensaje visual lo muestra el frontend |
+| RF-05 Enviar ofrecimiento de donacion | Cumple | `POST /public/donations/offers` |
+| RF-06 Restringir donaciones a articulos en especie | Cumple | `donation_offers.selected_items`, constraints de BDD y DTO |
+| RF-07 Registrar y conservar formularios | Cumple | `adoption_applications`, `donation_offers`, triggers de no eliminacion fisica |
+| RF-08 Notificar a administradores | Cumple parcial | Notificaciones internas implementadas. Correo real queda fuera si el equipo decide no usarlo |
+| RF-09 Gestionar solicitudes de adopcion | Cumple | `GET /admin/adoptions/applications`, `PATCH /admin/adoptions/applications/:id/status` |
+| RF-10 Gestionar ofrecimientos de donacion | Cumple | `GET /admin/donations/offers`, `PATCH /admin/donations/offers/:id/status` |
+| RF-11 Autenticar usuarios y controlar permisos | Cumple | `POST /auth/login`, `GET /auth/me`, roles, guards y `GET/POST/PATCH /admin/users/operators` |
+| RF-12 Recuperar la contrasena | Cumple | `POST /auth/forgot-password` con Supabase Auth y cambio final desde frontend |
 | Limpieza de alcance anterior | Cumple | Se eliminaron modulos antiguos no alineados con la BDD simplificada |
 
 ## Postman
