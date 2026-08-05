@@ -59,7 +59,9 @@ export class AdminAnimalsController {
   ) {}
 
   @Get()
-  getAnimals(@Query() query: PaginationQueryDto): Promise<PaginatedResult<Animal>> {
+  getAnimals(
+    @Query() query: PaginationQueryDto,
+  ): Promise<PaginatedResult<Animal>> {
     return this.getAdminAnimalsUseCase.execute(query);
   }
 

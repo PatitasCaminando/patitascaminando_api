@@ -72,10 +72,14 @@ export class AuthSupabaseRepository implements AuthRepositoryPort {
     const message =
       'Si el correo ingresado esta asociado a una cuenta activa, recibira las instrucciones para restablecer su contrasena.';
 
-    const { data: isActiveStaff, error: validationError } =
-      await this.supabaseAdmin.rpc('is_active_staff_email', {
+    const passwordResetValidation = await this.supabaseAdmin.rpc(
+      'is_active_staff_email',
+      {
         p_email: input.email,
-      });
+      },
+    );
+    const isActiveStaff = passwordResetValidation.data as boolean | null;
+    const validationError = passwordResetValidation.error;
 
     if (validationError) {
       throw new InternalServerErrorException(validationError.message);

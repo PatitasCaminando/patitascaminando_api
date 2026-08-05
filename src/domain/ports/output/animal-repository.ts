@@ -66,7 +66,9 @@ export interface AnimalRepositoryPort {
     pagination?: PaginationInput,
   ): Promise<PaginatedResult<Animal>>;
   findPublicAnimalBySlug(slug: string): Promise<Animal>;
-  findAdminAnimals(pagination?: PaginationInput): Promise<PaginatedResult<Animal>>;
+  findAdminAnimals(
+    pagination?: PaginationInput,
+  ): Promise<PaginatedResult<Animal>>;
   createAnimal(input: CreateAnimalInput): Promise<Animal>;
   updateAnimal(id: string, input: UpdateAnimalInput): Promise<Animal>;
   deleteAnimal(id: string): Promise<void>;

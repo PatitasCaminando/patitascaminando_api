@@ -16,7 +16,9 @@ export class GetAdminDonationOffersUseCase {
     private readonly donationRepository: DonationRepositoryPort,
   ) {}
 
-  execute(pagination?: PaginationInput): Promise<PaginatedResult<DonationOffer>> {
+  execute(
+    pagination?: PaginationInput,
+  ): Promise<PaginatedResult<DonationOffer>> {
     return this.donationRepository.findAdminOffers(pagination);
   }
 }
