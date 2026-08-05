@@ -1,4 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
+import type {
+  PaginatedResult,
+  PaginationInput,
+} from '../../../domain/models/common/pagination';
 import type { DonationOffer } from '../../../domain/models/donations/donation';
 import {
   DONATION_REPOSITORY,
@@ -12,7 +16,7 @@ export class GetAdminDonationOffersUseCase {
     private readonly donationRepository: DonationRepositoryPort,
   ) {}
 
-  execute(): Promise<DonationOffer[]> {
-    return this.donationRepository.findAdminOffers();
+  execute(pagination?: PaginationInput): Promise<PaginatedResult<DonationOffer>> {
+    return this.donationRepository.findAdminOffers(pagination);
   }
 }

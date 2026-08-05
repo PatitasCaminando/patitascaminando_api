@@ -1,9 +1,19 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UpdateAdoptionStatusDto } from '../../../application/dto/adoptions/update-adoption-status';
+import { PaginationQueryDto } from '../../../application/dto/common/pagination-query';
 import { GetAdminAdoptionApplicationsUseCase } from '../../../application/use-cases/adoptions/get-admin-adoption-applications';
 import { UpdateAdoptionStatusUseCase } from '../../../application/use-cases/adoptions/update-adoption-status';
 import type { AdoptionApplication } from '../../../domain/models/adoptions/adoption';
 import type { AuthenticatedUser } from '../../../domain/models/auth/authenticated-user';
+import type { PaginatedResult } from '../../../domain/models/common/pagination';
 import { CurrentUser } from '../../http/auth/decorators/current-user';
 import { Permissions } from '../../http/auth/decorators/permissions';
 import { RolesPermissionsGuard } from '../../http/auth/guards/roles-permissions';
@@ -19,8 +29,10 @@ export class AdminAdoptionsController {
   ) {}
 
   @Get('applications')
-  getApplications(): Promise<AdoptionApplication[]> {
-    return this.getAdminAdoptionApplicationsUseCase.execute();
+  getApplications(
+    @Query() query: PaginationQueryDto,
+  ): Promise<PaginatedResult<AdoptionApplication>> {
+    return this.getAdminAdoptionApplicationsUseCase.execute(query);
   }
 
   @Patch('applications/:id/status')

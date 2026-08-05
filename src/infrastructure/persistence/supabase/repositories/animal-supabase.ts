@@ -15,6 +15,10 @@ import type {
   CreateAnimalInput,
   UpdateAnimalInput,
 } from '../../../../domain/ports/output/animal-repository';
+import type {
+  PaginatedResult,
+  PaginationInput,
+} from '../../../../domain/models/common/pagination';
 import { SUPABASE_ADMIN_CLIENT } from '../supabase.tokens';
 import type { AnimalProfileRow } from '../types/bdd-supabase';
 
@@ -25,29 +29,49 @@ export class AnimalSupabaseRepository implements AnimalRepositoryPort {
     private readonly supabase: SupabaseClient,
   ) {}
 
-  async findPublicAnimals(): Promise<Animal[]> {
-    const { data, error } = await this.supabase
+  async findPublicAnimals(
+    pagination?: PaginationInput,
+  ): Promise<PaginatedResult<Animal>> {
+    const page = this.resolvePage(pagination);
+    const { from, to } = this.rangeFor(page);
+
+    const { data, error, count } = await this.supabase
       .from('animals')
-      .select(this.animalSelect)
+      .select(this.animalSelect, { count: 'exact' })
       .eq('is_active', true)
       .eq('is_publicly_visible', true)
       .neq('status', 'archivado')
       .order('created_at', { ascending: false })
+      .range(from, to)
       .returns<AnimalProfileRow[]>();
 
     if (error) throw new InternalServerErrorException(error.message);
-    return (data ?? []).map((row) => this.toAnimal(row));
+    return this.toPaginatedResult(
+      (data ?? []).map((row) => this.toAnimal(row)),
+      page,
+      count ?? 0,
+    );
   }
 
-  async findAdminAnimals(): Promise<Animal[]> {
-    const { data, error } = await this.supabase
+  async findAdminAnimals(
+    pagination?: PaginationInput,
+  ): Promise<PaginatedResult<Animal>> {
+    const page = this.resolvePage(pagination);
+    const { from, to } = this.rangeFor(page);
+
+    const { data, error, count } = await this.supabase
       .from('animals')
-      .select(this.animalSelect)
+      .select(this.animalSelect, { count: 'exact' })
       .order('created_at', { ascending: false })
+      .range(from, to)
       .returns<AnimalProfileRow[]>();
 
     if (error) throw new InternalServerErrorException(error.message);
-    return (data ?? []).map((row) => this.toAnimal(row));
+    return this.toPaginatedResult(
+      (data ?? []).map((row) => this.toAnimal(row)),
+      page,
+      count ?? 0,
+    );
   }
 
   async findPublicAnimalBySlug(id: string): Promise<Animal> {
@@ -189,6 +213,38 @@ export class AnimalSupabaseRepository implements AnimalRepositoryPort {
       createdAt: now,
       updatedAt: now,
       deletedAt: null,
+    };
+  }
+
+  private resolvePage(pagination?: PaginationInput): Required<PaginationInput> {
+    return {
+      page: Math.max(1, Number(pagination?.page) || 1),
+      limit: Math.min(100, Math.max(1, Number(pagination?.limit) || 10)),
+    };
+  }
+
+  private rangeFor(pagination: Required<PaginationInput>): {
+    from: number;
+    to: number;
+  } {
+    const from = (pagination.page - 1) * pagination.limit;
+    return {
+      from,
+      to: from + pagination.limit - 1,
+    };
+  }
+
+  private toPaginatedResult<T>(
+    items: T[],
+    pagination: Required<PaginationInput>,
+    total: number,
+  ): PaginatedResult<T> {
+    return {
+      items,
+      page: pagination.page,
+      limit: pagination.limit,
+      total,
+      totalPages: Math.ceil(total / pagination.limit),
     };
   }
 

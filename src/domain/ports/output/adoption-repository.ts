@@ -3,6 +3,10 @@ import type {
   AdoptionStatus,
   HousingType,
 } from '../../models/adoptions/adoption';
+import type {
+  PaginatedResult,
+  PaginationInput,
+} from '../../models/common/pagination';
 
 export const ADOPTION_REPOSITORY = Symbol('ADOPTION_REPOSITORY');
 
@@ -55,7 +59,9 @@ export interface AdoptionRepositoryPort {
     input: CreateAdoptionApplicationInput,
   ): Promise<AdoptionApplication>;
   findMyApplications(userId: string): Promise<AdoptionApplication[]>;
-  findAdminApplications(): Promise<AdoptionApplication[]>;
+  findAdminApplications(
+    pagination?: PaginationInput,
+  ): Promise<PaginatedResult<AdoptionApplication>>;
   updateApplicationStatus(
     id: string,
     input: UpdateAdoptionStatusInput,

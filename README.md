@@ -241,6 +241,26 @@ Authorization: Bearer <accessToken>
 
 El token se obtiene con `POST /auth/login`.
 
+### Respuesta Paginada
+
+Los listados de animales, solicitudes de adopcion y ofrecimientos de donacion aceptan:
+
+```http
+?page=1&limit=10
+```
+
+Respuesta:
+
+```json
+{
+  "items": [],
+  "page": 1,
+  "limit": 10,
+  "total": 0,
+  "totalPages": 0
+}
+```
+
 ### Auth
 
 #### POST /auth/login
@@ -292,9 +312,9 @@ Uso:
 Mostrar informacion publica como rescatistas, bienestar animal, contacto y redes sociales.
 ```
 
-#### GET /public/animals
+#### GET /public/animals?page=1&limit=10
 
-Lista animales activos, visibles publicamente y no archivados.
+Lista animales activos, visibles publicamente y no archivados. Responde paginado.
 
 Uso:
 
@@ -410,9 +430,9 @@ Elimina una seccion.
 
 ### Admin - Animals
 
-#### GET /admin/animals
+#### GET /admin/animals?page=1&limit=10
 
-Lista todos los animales para administracion.
+Lista animales para administracion. Responde paginado.
 
 #### POST /admin/animals
 
@@ -466,9 +486,9 @@ Quita una ruta de imagen del animal.
 
 ### Admin - Adoptions
 
-#### GET /admin/adoptions/applications
+#### GET /admin/adoptions/applications?page=1&limit=10
 
-Lista solicitudes de adopcion recibidas.
+Lista solicitudes de adopcion recibidas. Responde paginado.
 
 #### PATCH /admin/adoptions/applications/:id/status
 
@@ -485,9 +505,9 @@ Body:
 
 ### Admin - Donations
 
-#### GET /admin/donations/offers
+#### GET /admin/donations/offers?page=1&limit=10
 
-Lista donaciones en especie recibidas.
+Lista donaciones en especie recibidas. Responde paginado.
 
 #### PATCH /admin/donations/offers/:id/status
 

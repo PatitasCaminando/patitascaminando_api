@@ -4,6 +4,10 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
+import type {
+  PaginatedResult,
+  PaginationInput,
+} from '../../../../domain/models/common/pagination';
 import type { DonationOffer } from '../../../../domain/models/donations/donation';
 import type {
   CreateDonationOfferInput,
@@ -45,15 +49,25 @@ export class DonationSupabaseRepository implements DonationRepositoryPort {
     return this.toOffer(data);
   }
 
-  async findAdminOffers(): Promise<DonationOffer[]> {
-    const { data, error } = await this.supabase
+  async findAdminOffers(
+    pagination?: PaginationInput,
+  ): Promise<PaginatedResult<DonationOffer>> {
+    const page = this.resolvePage(pagination);
+    const { from, to } = this.rangeFor(page);
+
+    const { data, error, count } = await this.supabase
       .from('donation_offers')
-      .select(this.offerSelect)
+      .select(this.offerSelect, { count: 'exact' })
       .order('submitted_at', { ascending: false })
+      .range(from, to)
       .returns<DonationOfferRow[]>();
 
     if (error) throw new InternalServerErrorException(error.message);
-    return (data ?? []).map((row) => this.toOffer(row));
+    return this.toPaginatedResult(
+      (data ?? []).map((row) => this.toOffer(row)),
+      page,
+      count ?? 0,
+    );
   }
 
   async updateOfferStatus(
@@ -98,6 +112,38 @@ export class DonationSupabaseRepository implements DonationRepositoryPort {
       submittedAt: row.submitted_at,
       updatedAt: row.updated_at,
       rowVersion: row.row_version,
+    };
+  }
+
+  private resolvePage(pagination?: PaginationInput): Required<PaginationInput> {
+    return {
+      page: Math.max(1, Number(pagination?.page) || 1),
+      limit: Math.min(100, Math.max(1, Number(pagination?.limit) || 10)),
+    };
+  }
+
+  private rangeFor(pagination: Required<PaginationInput>): {
+    from: number;
+    to: number;
+  } {
+    const from = (pagination.page - 1) * pagination.limit;
+    return {
+      from,
+      to: from + pagination.limit - 1,
+    };
+  }
+
+  private toPaginatedResult<T>(
+    items: T[],
+    pagination: Required<PaginationInput>,
+    total: number,
+  ): PaginatedResult<T> {
+    return {
+      items,
+      page: pagination.page,
+      limit: pagination.limit,
+      total,
+      totalPages: Math.ceil(total / pagination.limit),
     };
   }
 

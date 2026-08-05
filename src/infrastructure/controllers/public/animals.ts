@@ -1,7 +1,9 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { PaginationQueryDto } from '../../../application/dto/common/pagination-query';
 import { GetPublicAnimalBySlugUseCase } from '../../../application/use-cases/animals/get-public-animal-by-slug';
 import { GetPublicAnimalsUseCase } from '../../../application/use-cases/animals/get-public-animals';
 import type { Animal } from '../../../domain/models/animals/animal';
+import type { PaginatedResult } from '../../../domain/models/common/pagination';
 
 @Controller('public/animals')
 export class PublicAnimalsController {
@@ -11,8 +13,10 @@ export class PublicAnimalsController {
   ) {}
 
   @Get()
-  getAnimals(): Promise<Animal[]> {
-    return this.getPublicAnimalsUseCase.execute();
+  getAnimals(
+    @Query() query: PaginationQueryDto,
+  ): Promise<PaginatedResult<Animal>> {
+    return this.getPublicAnimalsUseCase.execute(query);
   }
 
   @Get(':slug')

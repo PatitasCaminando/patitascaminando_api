@@ -1,5 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { Animal } from '../../../domain/models/animals/animal';
+import type {
+  PaginatedResult,
+  PaginationInput,
+} from '../../../domain/models/common/pagination';
 import {
   ANIMAL_REPOSITORY,
   type AnimalRepositoryPort,
@@ -12,7 +16,7 @@ export class GetAdminAnimalsUseCase {
     private readonly animalRepository: AnimalRepositoryPort,
   ) {}
 
-  execute(): Promise<Animal[]> {
-    return this.animalRepository.findAdminAnimals();
+  execute(pagination?: PaginationInput): Promise<PaginatedResult<Animal>> {
+    return this.animalRepository.findAdminAnimals(pagination);
   }
 }

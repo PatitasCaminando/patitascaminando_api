@@ -1,5 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { AdoptionApplication } from '../../../domain/models/adoptions/adoption';
+import type {
+  PaginatedResult,
+  PaginationInput,
+} from '../../../domain/models/common/pagination';
 import {
   ADOPTION_REPOSITORY,
   type AdoptionRepositoryPort,
@@ -12,7 +16,9 @@ export class GetAdminAdoptionApplicationsUseCase {
     private readonly adoptionRepository: AdoptionRepositoryPort,
   ) {}
 
-  execute(): Promise<AdoptionApplication[]> {
-    return this.adoptionRepository.findAdminApplications();
+  execute(
+    pagination?: PaginationInput,
+  ): Promise<PaginatedResult<AdoptionApplication>> {
+    return this.adoptionRepository.findAdminApplications(pagination);
   }
 }

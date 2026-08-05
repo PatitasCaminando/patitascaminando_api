@@ -15,6 +15,10 @@ import type {
   UpdateAdoptionStatusInput,
   UpdateHousingTypeInput,
 } from '../../../../domain/ports/output/adoption-repository';
+import type {
+  PaginatedResult,
+  PaginationInput,
+} from '../../../../domain/models/common/pagination';
 import { SUPABASE_ADMIN_CLIENT } from '../supabase.tokens';
 import type {
   AdoptionApplicationRow,
@@ -133,15 +137,25 @@ export class AdoptionSupabaseRepository implements AdoptionRepositoryPort {
     return (data ?? []).map((row) => this.toApplication(row));
   }
 
-  async findAdminApplications(): Promise<AdoptionApplication[]> {
-    const { data, error } = await this.supabase
+  async findAdminApplications(
+    pagination?: PaginationInput,
+  ): Promise<PaginatedResult<AdoptionApplication>> {
+    const page = this.resolvePage(pagination);
+    const { from, to } = this.rangeFor(page);
+
+    const { data, error, count } = await this.supabase
       .from('adoption_applications')
-      .select(this.applicationSelect)
+      .select(this.applicationSelect, { count: 'exact' })
       .order('submitted_at', { ascending: false })
+      .range(from, to)
       .returns<AdoptionApplicationRow[]>();
 
     if (error) throw new InternalServerErrorException(error.message);
-    return (data ?? []).map((row) => this.toApplication(row));
+    return this.toPaginatedResult(
+      (data ?? []).map((row) => this.toApplication(row)),
+      page,
+      count ?? 0,
+    );
   }
 
   async updateApplicationStatus(
@@ -207,6 +221,38 @@ export class AdoptionSupabaseRepository implements AdoptionRepositoryPort {
       notificationError: row.notification_error,
       updatedAt: row.updated_at,
       rowVersion: row.row_version,
+    };
+  }
+
+  private resolvePage(pagination?: PaginationInput): Required<PaginationInput> {
+    return {
+      page: Math.max(1, Number(pagination?.page) || 1),
+      limit: Math.min(100, Math.max(1, Number(pagination?.limit) || 10)),
+    };
+  }
+
+  private rangeFor(pagination: Required<PaginationInput>): {
+    from: number;
+    to: number;
+  } {
+    const from = (pagination.page - 1) * pagination.limit;
+    return {
+      from,
+      to: from + pagination.limit - 1,
+    };
+  }
+
+  private toPaginatedResult<T>(
+    items: T[],
+    pagination: Required<PaginationInput>,
+    total: number,
+  ): PaginatedResult<T> {
+    return {
+      items,
+      page: pagination.page,
+      limit: pagination.limit,
+      total,
+      totalPages: Math.ceil(total / pagination.limit),
     };
   }
 

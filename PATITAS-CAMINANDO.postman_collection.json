@@ -67,6 +67,14 @@
     {
       "key": "operatorId",
       "value": ""
+    },
+    {
+      "key": "page",
+      "value": "1"
+    },
+    {
+      "key": "limit",
+      "value": "10"
     }
   ],
   "item": [
@@ -252,8 +260,9 @@
                 "type": "text/javascript",
                 "exec": [
                   "const json = pm.response.json();",
-                  "if (Array.isArray(json) && json[0]?.id) {",
-                  "  pm.collectionVariables.set('animalId', json[0].id);",
+                  "const items = Array.isArray(json) ? json : json.items;",
+                  "if (Array.isArray(items) && items[0]?.id) {",
+                  "  pm.collectionVariables.set('animalId', items[0].id);",
                   "}"
                 ]
               }
@@ -265,13 +274,23 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/public/animals",
+              "raw": "{{baseUrl}}/public/animals?page={{page}}&limit={{limit}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "public",
                 "animals"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}"
+                }
               ]
             }
           }
@@ -517,8 +536,9 @@
                 "type": "text/javascript",
                 "exec": [
                   "const json = pm.response.json();",
-                  "if (Array.isArray(json) && json[0]?.id) {",
-                  "  pm.collectionVariables.set('animalId', json[0].id);",
+                  "const items = Array.isArray(json) ? json : json.items;",
+                  "if (Array.isArray(items) && items[0]?.id) {",
+                  "  pm.collectionVariables.set('animalId', items[0].id);",
                   "}"
                 ]
               }
@@ -527,13 +547,23 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/admin/animals",
+              "raw": "{{baseUrl}}/admin/animals?page={{page}}&limit={{limit}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "admin",
                 "animals"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}"
+                }
               ]
             }
           }
@@ -683,8 +713,9 @@
                 "type": "text/javascript",
                 "exec": [
                   "const json = pm.response.json();",
-                  "if (Array.isArray(json) && json[0]?.id) {",
-                  "  pm.collectionVariables.set('adoptionApplicationId', json[0].id);",
+                  "const items = Array.isArray(json) ? json : json.items;",
+                  "if (Array.isArray(items) && items[0]?.id) {",
+                  "  pm.collectionVariables.set('adoptionApplicationId', items[0].id);",
                   "}"
                 ]
               }
@@ -693,7 +724,7 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/admin/adoptions/applications",
+              "raw": "{{baseUrl}}/admin/adoptions/applications?page={{page}}&limit={{limit}}",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -701,6 +732,16 @@
                 "admin",
                 "adoptions",
                 "applications"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}"
+                }
               ]
             }
           }
@@ -748,8 +789,9 @@
                 "type": "text/javascript",
                 "exec": [
                   "const json = pm.response.json();",
-                  "if (Array.isArray(json) && json[0]?.id) {",
-                  "  pm.collectionVariables.set('donationOfferId', json[0].id);",
+                  "const items = Array.isArray(json) ? json : json.items;",
+                  "if (Array.isArray(items) && items[0]?.id) {",
+                  "  pm.collectionVariables.set('donationOfferId', items[0].id);",
                   "}"
                 ]
               }
@@ -758,7 +800,7 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/admin/donations/offers",
+              "raw": "{{baseUrl}}/admin/donations/offers?page={{page}}&limit={{limit}}",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -766,6 +808,16 @@
                 "admin",
                 "donations",
                 "offers"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}"
+                }
               ]
             }
           }

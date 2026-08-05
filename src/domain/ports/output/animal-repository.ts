@@ -6,6 +6,10 @@ import type {
   AnimalSpecies,
   AnimalStatus,
 } from '../../models/animals/animal';
+import type {
+  PaginatedResult,
+  PaginationInput,
+} from '../../models/common/pagination';
 
 export const ANIMAL_REPOSITORY = Symbol('ANIMAL_REPOSITORY');
 
@@ -45,9 +49,11 @@ export interface AddAnimalImageInput {
 }
 
 export interface AnimalRepositoryPort {
-  findPublicAnimals(): Promise<Animal[]>;
+  findPublicAnimals(
+    pagination?: PaginationInput,
+  ): Promise<PaginatedResult<Animal>>;
   findPublicAnimalBySlug(slug: string): Promise<Animal>;
-  findAdminAnimals(): Promise<Animal[]>;
+  findAdminAnimals(pagination?: PaginationInput): Promise<PaginatedResult<Animal>>;
   createAnimal(input: CreateAnimalInput): Promise<Animal>;
   updateAnimal(id: string, input: UpdateAnimalInput): Promise<Animal>;
   deleteAnimal(id: string): Promise<void>;
