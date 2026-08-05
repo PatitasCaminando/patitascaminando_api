@@ -8,19 +8,6 @@ export type AdoptionStatus =
 
 export type AdoptionNotificationStatus = 'pendiente' | 'generada' | 'error';
 
-export interface HousingType {
-  id: string;
-  key: string;
-  name: string;
-  description: string | null;
-  requiresOtherDetail: boolean;
-  isActive: boolean;
-  orderIndex: number;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-}
-
 export interface AdoptionApplication {
   id: string;
   firstNames: string;

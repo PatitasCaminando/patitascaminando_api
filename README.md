@@ -220,7 +220,7 @@ operadores activos con receive_form_notifications = TRUE
 
 La API permite consultar las notificaciones del usuario autenticado y marcarlas como leidas.
 
-El envio real de correo queda preparado por campos como:
+El alcance operativo actual usa notificaciones internas en el backoffice. El envio real de correo no se usa por decision del equipo; la BDD conserva campos de control para una mejora futura:
 
 ```txt
 email_subject
@@ -231,7 +231,7 @@ email_sent_at
 email_error
 ```
 
-La notificacion interna esta implementada. El envio SMTP o worker de correo puede agregarse como mejora si el despliegue exige correo automatico real.
+La notificacion interna esta implementada y es el mecanismo vigente para avisos administrativos.
 
 ## Endpoints
 
@@ -664,7 +664,7 @@ Body:
 | RF-05 Enviar ofrecimiento de donacion | Cumple | `POST /public/donations/offers` |
 | RF-06 Restringir donaciones a articulos en especie | Cumple | `donation_offers.selected_items`, constraints de BDD y DTO |
 | RF-07 Registrar y conservar formularios | Cumple | `adoption_applications`, `donation_offers`, triggers de no eliminacion fisica |
-| RF-08 Notificar a administradores | Cumple parcial | Notificaciones internas implementadas. Correo real queda fuera si el equipo decide no usarlo |
+| RF-08 Notificar a administradores | Cumple segun alcance actual | Notificaciones internas implementadas; correo real descartado por decision del equipo |
 | RF-09 Gestionar solicitudes de adopcion | Cumple | `GET /admin/adoptions/applications`, `PATCH /admin/adoptions/applications/:id/status` |
 | RF-10 Gestionar ofrecimientos de donacion | Cumple | `GET /admin/donations/offers`, `PATCH /admin/donations/offers/:id/status` |
 | RF-11 Autenticar usuarios y controlar permisos | Cumple | `POST /auth/login`, `GET /auth/me`, roles, guards y `GET/POST/PATCH /admin/users/operators` |

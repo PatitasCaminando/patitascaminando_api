@@ -37,19 +37,6 @@ export type AnimalProfileRow = {
   updated_at: string;
 };
 
-export type HousingTypeRow = {
-  id: string;
-  key: string;
-  name: string;
-  description: string | null;
-  requires_other_detail: boolean;
-  is_active: boolean;
-  order_index: number;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
-};
-
 export type AdoptionApplicationRow = {
   id: string;
   first_names: string;
