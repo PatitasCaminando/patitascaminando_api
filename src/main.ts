@@ -8,7 +8,13 @@ async function bootstrap() {
   const config = app.get(ConfigService);
   const port = config.get<number>('PORT') ?? 3000;
 
-  app.enableCors();
+  app.enableCors({
+    origin: [
+      'https://patitascaminando.netlify.app',
+      'https://backoffice-patitas.netlify.app',
+    ],
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -18,4 +24,5 @@ async function bootstrap() {
 
   await app.listen(port);
 }
+
 void bootstrap();
