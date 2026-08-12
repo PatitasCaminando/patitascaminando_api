@@ -12,6 +12,10 @@ import { SITE_SECTION_REPOSITORY } from '../src/domain/ports/output/site-section
 import { USER_REPOSITORY } from '../src/domain/ports/output/user-repository';
 import { RolesPermissionsGuard } from '../src/infrastructure/http/auth/guards/roles-permissions';
 import { SupabaseAuthGuard } from '../src/infrastructure/http/auth/guards/supabase-auth';
+import {
+  SUPABASE_ADMIN_CLIENT,
+  SUPABASE_PUBLIC_CLIENT,
+} from '../src/infrastructure/persistence/supabase/supabase.tokens';
 
 type HttpResponse<TBody> = {
   body: TBody;
@@ -31,6 +35,12 @@ type UploadedImageResponse = {
   mediaId: string;
   bucket: string;
   path: string;
+};
+
+type HealthResponse = {
+  status: string;
+  service: string;
+  timestamp: string;
 };
 
 type NotificationResponse = typeof notification;
@@ -226,6 +236,10 @@ describe('Patitas Caminando API (e2e)', () => {
       .useValue(userRepository)
       .overrideProvider(SITE_SECTION_REPOSITORY)
       .useValue(siteSectionRepository)
+      .overrideProvider(SUPABASE_PUBLIC_CLIENT)
+      .useValue({})
+      .overrideProvider(SUPABASE_ADMIN_CLIENT)
+      .useValue({})
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -244,6 +258,17 @@ describe('Patitas Caminando API (e2e)', () => {
 
   afterAll(async () => {
     await app.close();
+  });
+
+  it('responde el estado de salud de la API', async () => {
+    await request(app.getHttpServer())
+      .get('/health')
+      .expect(200)
+      .expect(({ body }: HttpResponse<HealthResponse>) => {
+        expect(body.status).toBe('ok');
+        expect(body.service).toBe('patitascaminando_api');
+        expect(body.timestamp).toEqual(expect.any(String));
+      });
   });
 
   it('lista animales publicos con paginado', async () => {

@@ -45,6 +45,7 @@ import { AdminNotificationsController } from './infrastructure/controllers/admin
 import { AdminSiteSectionsController } from './infrastructure/controllers/admin/site-sections';
 import { AdminUsersController } from './infrastructure/controllers/admin/users';
 import { AuthController } from './infrastructure/controllers/auth';
+import { HealthController } from './infrastructure/controllers/health';
 import { PublicAdoptionsController } from './infrastructure/controllers/public/adoptions';
 import { PublicAnimalsController } from './infrastructure/controllers/public/animals';
 import { PublicDonationsController } from './infrastructure/controllers/public/donations';
@@ -79,6 +80,7 @@ import { SupabaseModule } from './infrastructure/persistence/supabase/supabase.m
     PublicDonationsController,
     AdminDonationsController,
     AdminNotificationsController,
+    HealthController,
   ],
   providers: [
     CreateOperatorUseCase,
