@@ -24,6 +24,9 @@ export interface CreateAnimalInput {
   description: string;
   generalCondition: string;
   photoPaths: string[];
+  isSterilized?: boolean | null;
+  isVaccinated?: boolean | null;
+  isDewormed?: boolean | null;
   isActive?: boolean;
   isPubliclyVisible?: boolean;
 }
@@ -38,6 +41,9 @@ export interface UpdateAnimalInput {
   description?: string;
   generalCondition?: string;
   photoPaths?: string[];
+  isSterilized?: boolean | null;
+  isVaccinated?: boolean | null;
+  isDewormed?: boolean | null;
   isActive?: boolean;
   isPubliclyVisible?: boolean;
 }

@@ -46,6 +46,18 @@ export class CreateAnimalDto {
 
   @IsOptional()
   @IsBoolean()
+  isSterilized?: boolean | null;
+
+  @IsOptional()
+  @IsBoolean()
+  isVaccinated?: boolean | null;
+
+  @IsOptional()
+  @IsBoolean()
+  isDewormed?: boolean | null;
+
+  @IsOptional()
+  @IsBoolean()
   isActive?: boolean;
 
   @IsOptional()

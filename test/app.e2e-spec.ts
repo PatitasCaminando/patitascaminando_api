@@ -65,6 +65,9 @@ const animal = {
   description: 'Perrita tranquila.',
   generalCondition: 'Buen estado general.',
   photoPaths: ['media-assets/pending/luna.jpg'],
+  isSterilized: true,
+  isVaccinated: true,
+  isDewormed: true,
   status: 'disponible',
   isActive: true,
   isPubliclyVisible: true,
@@ -418,6 +421,7 @@ describe('Patitas Caminando API (e2e)', () => {
         });
         expect(body.items).toHaveLength(1);
         expect(body.items[0].id).toBe(animal.id);
+        expect(body.items[0].isVaccinated).toBe(true);
       });
 
     expect(animalRepository.findPublicAnimals).toHaveBeenCalledWith({
@@ -435,6 +439,7 @@ describe('Patitas Caminando API (e2e)', () => {
       .expect(({ body }: HttpResponse<AnimalResponse>) => {
         expect(body.id).toBe(animal.id);
         expect(body.name).toBe('Luna');
+        expect(body.isSterilized).toBe(true);
       });
 
     expect(animalRepository.findPublicAnimalBySlug).toHaveBeenCalledWith(
@@ -517,6 +522,7 @@ describe('Patitas Caminando API (e2e)', () => {
       .expect(({ body }: HttpResponse<PaginatedAnimalsResponse>) => {
         expect(body.page).toBe(2);
         expect(body.items[0].id).toBe(animal.id);
+        expect(body.items[0].isDewormed).toBe(true);
       });
 
     expect(animalRepository.findAdminAnimals).toHaveBeenCalledWith({
@@ -541,6 +547,9 @@ describe('Patitas Caminando API (e2e)', () => {
         description: 'Perrita tranquila.',
         generalCondition: 'Buen estado general.',
         photoPaths: ['media-assets/pending/luna.jpg'],
+        isSterilized: true,
+        isVaccinated: true,
+        isDewormed: true,
         status: 'disponible',
         isActive: true,
         isPubliclyVisible: true,
@@ -549,12 +558,16 @@ describe('Patitas Caminando API (e2e)', () => {
       .expect(({ body }: HttpResponse<AnimalResponse>) => {
         expect(body.id).toBe(animal.id);
         expect(body.photoPaths).toEqual(['media-assets/pending/luna.jpg']);
+        expect(body.isDewormed).toBe(true);
       });
 
     expect(animalRepository.createAnimal).toHaveBeenCalledWith(
       expect.objectContaining({
         createdBy: authenticatedUser.id,
         name: 'Luna',
+        isSterilized: true,
+        isVaccinated: true,
+        isDewormed: true,
       }),
     );
   });
@@ -574,6 +587,9 @@ describe('Patitas Caminando API (e2e)', () => {
         description: 'Perrita tranquila.',
         generalCondition: 'Buen estado general.',
         photoPaths: ['media-assets/pending/luna.jpg'],
+        isSterilized: true,
+        isVaccinated: true,
+        isDewormed: true,
         status: 'disponible',
         isActive: true,
         isPubliclyVisible: true,
@@ -616,6 +632,7 @@ describe('Patitas Caminando API (e2e)', () => {
     animalRepository.updateAnimal.mockResolvedValue({
       ...animal,
       status: 'en_proceso',
+      isSterilized: false,
     });
 
     await request(app.getHttpServer())
@@ -623,14 +640,17 @@ describe('Patitas Caminando API (e2e)', () => {
       .set('Authorization', 'Bearer fake-token')
       .send({
         status: 'en_proceso',
+        isSterilized: false,
       })
       .expect(200)
       .expect(({ body }: HttpResponse<AnimalResponse>) => {
         expect(body.status).toBe('en_proceso');
+        expect(body.isSterilized).toBe(false);
       });
 
     expect(animalRepository.updateAnimal).toHaveBeenCalledWith(animal.id, {
       status: 'en_proceso',
+      isSterilized: false,
     });
   });
 

@@ -29,6 +29,9 @@ export type AnimalProfileRow = {
   description: string;
   general_condition: string;
   photo_paths: string[];
+  is_sterilized: boolean | null;
+  is_vaccinated: boolean | null;
+  is_dewormed: boolean | null;
   status:
     'disponible' | 'en_proceso' | 'adoptado' | 'no_disponible' | 'archivado';
   is_active: boolean;
