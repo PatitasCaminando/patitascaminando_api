@@ -93,6 +93,23 @@ export class AnimalSupabaseRepository implements AnimalRepositoryPort {
     return this.toAnimal(data);
   }
 
+  async existsSimilarAnimal(input: CreateAnimalInput): Promise<boolean> {
+    const { data, error } = await this.supabase
+      .from('animals')
+      .select('id')
+      .ilike('name', input.name.trim())
+      .eq('species', input.species)
+      .eq('sex', input.sex)
+      .eq('approximate_age', input.approximateAge)
+      .eq('size', input.size)
+      .neq('status', 'archivado')
+      .limit(1)
+      .maybeSingle<{ id: string }>();
+
+    if (error) throw new InternalServerErrorException(error.message);
+    return Boolean(data);
+  }
+
   async createAnimal(input: CreateAnimalInput): Promise<Animal> {
     const { data, error } = await this.supabase
       .from('animals')

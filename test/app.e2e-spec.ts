@@ -217,6 +217,7 @@ describe('Patitas Caminando API (e2e)', () => {
     findPublicAnimals: jest.fn(),
     findPublicAnimalBySlug: jest.fn(),
     findAdminAnimals: jest.fn(),
+    existsSimilarAnimal: jest.fn(),
     createAnimal: jest.fn(),
     updateAnimal: jest.fn(),
     deleteAnimal: jest.fn(),
@@ -525,6 +526,7 @@ describe('Patitas Caminando API (e2e)', () => {
   });
 
   it('crea un animal desde backoffice con el usuario autenticado', async () => {
+    animalRepository.existsSimilarAnimal.mockResolvedValue(false);
     animalRepository.createAnimal.mockResolvedValue(animal);
 
     await request(app.getHttpServer())
@@ -555,6 +557,35 @@ describe('Patitas Caminando API (e2e)', () => {
         name: 'Luna',
       }),
     );
+  });
+
+  it('rechaza crear un animal duplicado desde backoffice', async () => {
+    animalRepository.existsSimilarAnimal.mockResolvedValue(true);
+
+    await request(app.getHttpServer())
+      .post('/admin/animals')
+      .set('Authorization', 'Bearer fake-token')
+      .send({
+        name: 'Luna',
+        species: 'perro',
+        sex: 'hembra',
+        approximateAge: '2 anios',
+        size: 'mediano',
+        description: 'Perrita tranquila.',
+        generalCondition: 'Buen estado general.',
+        photoPaths: ['media-assets/pending/luna.jpg'],
+        status: 'disponible',
+        isActive: true,
+        isPubliclyVisible: true,
+      })
+      .expect(409)
+      .expect(({ body }) => {
+        expect(body.message).toBe(
+          'Ya existe un animal registrado con los mismos datos principales.',
+        );
+      });
+
+    expect(animalRepository.createAnimal).not.toHaveBeenCalled();
   });
 
   it('sube una imagen antes de crear el animal', async () => {
