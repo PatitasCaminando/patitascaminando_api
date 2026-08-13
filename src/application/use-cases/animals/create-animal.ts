@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import type { Animal } from '../../../domain/models/animals/animal';
 import {
   ANIMAL_REPOSITORY,
@@ -13,7 +13,16 @@ export class CreateAnimalUseCase {
     private readonly animalRepository: AnimalRepositoryPort,
   ) {}
 
-  execute(input: CreateAnimalInput): Promise<Animal> {
+  async execute(input: CreateAnimalInput): Promise<Animal> {
+    const alreadyExists =
+      await this.animalRepository.existsSimilarAnimal(input);
+
+    if (alreadyExists) {
+      throw new ConflictException(
+        'Ya existe un animal registrado con los mismos datos principales.',
+      );
+    }
+
     return this.animalRepository.createAnimal(input);
   }
 }
