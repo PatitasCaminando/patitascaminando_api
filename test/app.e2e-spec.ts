@@ -43,6 +43,11 @@ type HealthResponse = {
   timestamp: string;
 };
 
+type AuthSessionResponse = typeof authSession;
+type CurrentUserResponse = typeof currentUser;
+type OperatorResponse = typeof operator;
+type SiteSectionResponse = typeof siteSection;
+type AnimalImageResponse = (typeof animal.images)[number];
 type NotificationResponse = typeof notification;
 
 const authenticatedUser = {
@@ -145,6 +150,64 @@ const notification = {
   emailSentAt: null,
   emailError: null,
   createdAt: '2026-08-08T12:00:00.000Z',
+};
+
+const authSession = {
+  accessToken: 'access-token',
+  refreshToken: 'refresh-token',
+  tokenType: 'bearer',
+  expiresIn: 3600,
+  expiresAt: null,
+  user: {
+    id: authenticatedUser.id,
+    email: authenticatedUser.email,
+  },
+};
+
+const currentUser = {
+  id: authenticatedUser.id,
+  email: authenticatedUser.email,
+  profile: {
+    id: '66666666-6666-4666-8666-666666666666',
+    avatarId: null,
+    firstNames: 'Admin',
+    lastNames: 'Patitas',
+    phone: '0999999999',
+    birthDate: null,
+    address: null,
+    housingSector: null,
+    status: 'active',
+    userType: 'staff',
+    createdAt: '2026-08-08T12:00:00.000Z',
+    updatedAt: '2026-08-08T12:00:00.000Z',
+  },
+  roles: ['admin'],
+  permissions: ['animals.manage', 'adoptions.manage'],
+};
+
+const operator = {
+  id: '77777777-7777-4777-8777-777777777777',
+  email: 'operador@patitas.test',
+  firstNames: 'Operador',
+  lastNames: 'Uno',
+  phone: '0977777777',
+  isActive: true,
+  receiveFormNotifications: true,
+  createdAt: '2026-08-08T12:00:00.000Z',
+  updatedAt: '2026-08-08T12:00:00.000Z',
+};
+
+const siteSection = {
+  id: '88888888-8888-4888-8888-888888888888',
+  sectionKey: 'contacto',
+  title: 'Contacto',
+  content: {
+    phone: '0999999999',
+  },
+  isPublished: true,
+  displayOrder: 1,
+  createdAt: '2026-08-08T12:00:00.000Z',
+  updatedAt: '2026-08-08T12:00:00.000Z',
 };
 
 describe('Patitas Caminando API (e2e)', () => {
@@ -271,6 +334,68 @@ describe('Patitas Caminando API (e2e)', () => {
       });
   });
 
+  it('inicia sesion de usuario', async () => {
+    authRepository.login.mockResolvedValue(authSession);
+
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: authenticatedUser.email,
+        password: 'secret123',
+      })
+      .expect(201)
+      .expect(({ body }: HttpResponse<AuthSessionResponse>) => {
+        expect(body.accessToken).toBe('access-token');
+        expect(body.user.email).toBe(authenticatedUser.email);
+      });
+
+    expect(authRepository.login).toHaveBeenCalledWith({
+      email: authenticatedUser.email,
+      password: 'secret123',
+    });
+  });
+
+  it('solicita restablecimiento de contrasena', async () => {
+    authRepository.requestPasswordReset.mockResolvedValue({
+      email: authenticatedUser.email,
+      requested: true,
+    });
+
+    await request(app.getHttpServer())
+      .post('/auth/forgot-password')
+      .send({
+        email: authenticatedUser.email,
+      })
+      .expect(201)
+      .expect(({ body }) => {
+        expect(body).toEqual({
+          email: authenticatedUser.email,
+          requested: true,
+        });
+      });
+
+    expect(authRepository.requestPasswordReset).toHaveBeenCalledWith({
+      email: authenticatedUser.email,
+    });
+  });
+
+  it('obtiene el usuario autenticado actual', async () => {
+    userRepository.findCurrentUserById.mockResolvedValue(currentUser);
+
+    await request(app.getHttpServer())
+      .get('/auth/me')
+      .set('Authorization', 'Bearer fake-token')
+      .expect(200)
+      .expect(({ body }: HttpResponse<CurrentUserResponse>) => {
+        expect(body.id).toBe(authenticatedUser.id);
+        expect(body.profile.firstNames).toBe('Admin');
+      });
+
+    expect(userRepository.findCurrentUserById).toHaveBeenCalledWith(
+      authenticatedUser,
+    );
+  });
+
   it('lista animales publicos con paginado', async () => {
     animalRepository.findPublicAnimals.mockResolvedValue({
       items: [animal],
@@ -361,6 +486,44 @@ describe('Patitas Caminando API (e2e)', () => {
       });
   });
 
+  it('lista secciones publicas del sitio', async () => {
+    siteSectionRepository.findPublicSections.mockResolvedValue([siteSection]);
+
+    await request(app.getHttpServer())
+      .get('/public/site-sections')
+      .expect(200)
+      .expect(({ body }: HttpResponse<SiteSectionResponse[]>) => {
+        expect(body).toHaveLength(1);
+        expect(body[0].sectionKey).toBe('contacto');
+      });
+
+    expect(siteSectionRepository.findPublicSections).toHaveBeenCalled();
+  });
+
+  it('lista animales desde backoffice con paginado', async () => {
+    animalRepository.findAdminAnimals.mockResolvedValue({
+      items: [animal],
+      page: 2,
+      limit: 5,
+      total: 6,
+      totalPages: 2,
+    });
+
+    await request(app.getHttpServer())
+      .get('/admin/animals?page=2&limit=5')
+      .set('Authorization', 'Bearer fake-token')
+      .expect(200)
+      .expect(({ body }: HttpResponse<PaginatedAnimalsResponse>) => {
+        expect(body.page).toBe(2);
+        expect(body.items[0].id).toBe(animal.id);
+      });
+
+    expect(animalRepository.findAdminAnimals).toHaveBeenCalledWith({
+      page: 2,
+      limit: 5,
+    });
+  });
+
   it('crea un animal desde backoffice con el usuario autenticado', async () => {
     animalRepository.createAnimal.mockResolvedValue(animal);
 
@@ -418,6 +581,263 @@ describe('Patitas Caminando API (e2e)', () => {
       });
   });
 
+  it('actualiza un animal desde backoffice', async () => {
+    animalRepository.updateAnimal.mockResolvedValue({
+      ...animal,
+      status: 'en_proceso',
+    });
+
+    await request(app.getHttpServer())
+      .patch(`/admin/animals/${animal.id}`)
+      .set('Authorization', 'Bearer fake-token')
+      .send({
+        status: 'en_proceso',
+      })
+      .expect(200)
+      .expect(({ body }: HttpResponse<AnimalResponse>) => {
+        expect(body.status).toBe('en_proceso');
+      });
+
+    expect(animalRepository.updateAnimal).toHaveBeenCalledWith(animal.id, {
+      status: 'en_proceso',
+    });
+  });
+
+  it('elimina un animal desde backoffice', async () => {
+    animalRepository.deleteAnimal.mockResolvedValue(undefined);
+
+    await request(app.getHttpServer())
+      .delete(`/admin/animals/${animal.id}`)
+      .set('Authorization', 'Bearer fake-token')
+      .expect(204);
+
+    expect(animalRepository.deleteAnimal).toHaveBeenCalledWith(animal.id);
+  });
+
+  it('agrega una imagen existente a un animal', async () => {
+    animalRepository.addImage.mockResolvedValue(animal.images[0]);
+
+    await request(app.getHttpServer())
+      .post(`/admin/animals/${animal.id}/images`)
+      .set('Authorization', 'Bearer fake-token')
+      .send({
+        mediaId: 'media-assets/pending/luna.jpg',
+        isPrimary: true,
+        orderIndex: 0,
+      })
+      .expect(201)
+      .expect(({ body }: HttpResponse<AnimalImageResponse>) => {
+        expect(body.mediaId).toBe('media-assets/pending/luna.jpg');
+      });
+
+    expect(animalRepository.addImage).toHaveBeenCalledWith(animal.id, {
+      mediaId: 'media-assets/pending/luna.jpg',
+      isPrimary: true,
+      orderIndex: 0,
+    });
+  });
+
+  it('sube una imagen para un animal existente', async () => {
+    animalRepository.uploadImage.mockResolvedValue(animal.images[0]);
+
+    await request(app.getHttpServer())
+      .post(`/admin/animals/${animal.id}/images/upload`)
+      .set('Authorization', 'Bearer fake-token')
+      .attach('file', Buffer.from('fake image'), {
+        filename: 'luna.webp',
+        contentType: 'image/webp',
+      })
+      .expect(201)
+      .expect(({ body }: HttpResponse<AnimalImageResponse>) => {
+        expect(body.animalId).toBe(animal.id);
+      });
+
+    expect(animalRepository.uploadImage).toHaveBeenCalledWith(
+      animal.id,
+      expect.objectContaining({
+        mimeType: 'image/webp',
+        originalName: 'luna.webp',
+      }),
+    );
+  });
+
+  it('rechaza subir imagen sin archivo', async () => {
+    await request(app.getHttpServer())
+      .post('/admin/animals/images/upload')
+      .set('Authorization', 'Bearer fake-token')
+      .expect(400);
+
+    expect(animalRepository.uploadImageFile).not.toHaveBeenCalled();
+  });
+
+  it('rechaza subir imagen con formato no permitido', async () => {
+    await request(app.getHttpServer())
+      .post('/admin/animals/images/upload')
+      .set('Authorization', 'Bearer fake-token')
+      .attach('file', Buffer.from('fake image'), {
+        filename: 'luna.gif',
+        contentType: 'image/gif',
+      })
+      .expect(400);
+
+    expect(animalRepository.uploadImageFile).not.toHaveBeenCalled();
+  });
+
+  it('rechaza subir imagen que supera el tamano permitido', async () => {
+    process.env.MAX_ANIMAL_IMAGE_SIZE_MB = '1';
+
+    try {
+      await request(app.getHttpServer())
+        .post('/admin/animals/images/upload')
+        .set('Authorization', 'Bearer fake-token')
+        .attach('file', Buffer.alloc(2 * 1024 * 1024), {
+          filename: 'luna.jpg',
+          contentType: 'image/jpeg',
+        })
+        .expect(400);
+    } finally {
+      delete process.env.MAX_ANIMAL_IMAGE_SIZE_MB;
+    }
+
+    expect(animalRepository.uploadImageFile).not.toHaveBeenCalled();
+  });
+
+  it('elimina una imagen de un animal', async () => {
+    const imageId = '99999999-9999-4999-8999-999999999999';
+
+    animalRepository.deleteImage.mockResolvedValue(undefined);
+
+    await request(app.getHttpServer())
+      .delete(`/admin/animals/${animal.id}/images/${imageId}`)
+      .set('Authorization', 'Bearer fake-token')
+      .expect(204);
+
+    expect(animalRepository.deleteImage).toHaveBeenCalledWith(
+      animal.id,
+      imageId,
+    );
+  });
+
+  it('lista solicitudes de adopcion desde backoffice', async () => {
+    adoptionRepository.findAdminApplications.mockResolvedValue({
+      items: [adoptionApplication],
+      page: 1,
+      limit: 10,
+      total: 1,
+      totalPages: 1,
+    });
+
+    await request(app.getHttpServer())
+      .get('/admin/adoptions/applications?page=1&limit=10')
+      .set('Authorization', 'Bearer fake-token')
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body.items[0].id).toBe(adoptionApplication.id);
+      });
+
+    expect(adoptionRepository.findAdminApplications).toHaveBeenCalledWith({
+      page: 1,
+      limit: 10,
+    });
+  });
+
+  it('actualiza estado de una solicitud de adopcion', async () => {
+    adoptionRepository.updateApplicationStatus.mockResolvedValue({
+      ...adoptionApplication,
+      status: 'contactada',
+      internalObservations: 'Se llamo a la solicitante.',
+    });
+
+    await request(app.getHttpServer())
+      .patch(`/admin/adoptions/applications/${adoptionApplication.id}/status`)
+      .set('Authorization', 'Bearer fake-token')
+      .send({
+        status: 'contactada',
+        internalObservations: 'Se llamo a la solicitante.',
+      })
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body.status).toBe('contactada');
+      });
+
+    expect(adoptionRepository.updateApplicationStatus).toHaveBeenCalledWith(
+      adoptionApplication.id,
+      {
+        status: 'contactada',
+        internalObservations: 'Se llamo a la solicitante.',
+        changedBy: authenticatedUser.id,
+      },
+    );
+  });
+
+  it('lista ofrecimientos de donacion desde backoffice', async () => {
+    donationRepository.findAdminOffers.mockResolvedValue({
+      items: [donationOffer],
+      page: 1,
+      limit: 10,
+      total: 1,
+      totalPages: 1,
+    });
+
+    await request(app.getHttpServer())
+      .get('/admin/donations/offers?page=1&limit=10')
+      .set('Authorization', 'Bearer fake-token')
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body.items[0].id).toBe(donationOffer.id);
+      });
+
+    expect(donationRepository.findAdminOffers).toHaveBeenCalledWith({
+      page: 1,
+      limit: 10,
+    });
+  });
+
+  it('actualiza estado de un ofrecimiento de donacion', async () => {
+    donationRepository.updateOfferStatus.mockResolvedValue({
+      ...donationOffer,
+      status: 'recibida',
+      internalObservations: 'Donacion recibida.',
+    });
+
+    await request(app.getHttpServer())
+      .patch(`/admin/donations/offers/${donationOffer.id}/status`)
+      .set('Authorization', 'Bearer fake-token')
+      .send({
+        status: 'recibida',
+        internalObservations: 'Donacion recibida.',
+      })
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body.status).toBe('recibida');
+      });
+
+    expect(donationRepository.updateOfferStatus).toHaveBeenCalledWith(
+      donationOffer.id,
+      {
+        status: 'recibida',
+        internalObservations: 'Donacion recibida.',
+      },
+    );
+  });
+
+  it('obtiene una notificacion por id para el usuario autenticado', async () => {
+    notificationRepository.findByIdForRecipient.mockResolvedValue(notification);
+
+    await request(app.getHttpServer())
+      .get(`/admin/notifications/${notification.id}`)
+      .set('Authorization', 'Bearer fake-token')
+      .expect(200)
+      .expect(({ body }: HttpResponse<NotificationResponse>) => {
+        expect(body.id).toBe(notification.id);
+      });
+
+    expect(notificationRepository.findByIdForRecipient).toHaveBeenCalledWith(
+      notification.id,
+      authenticatedUser.id,
+    );
+  });
+
   it('lista notificaciones solo para el usuario autenticado', async () => {
     notificationRepository.findByRecipient.mockResolvedValue([notification]);
 
@@ -454,6 +874,208 @@ describe('Patitas Caminando API (e2e)', () => {
     expect(notificationRepository.markAsRead).toHaveBeenCalledWith(
       notification.id,
       authenticatedUser.id,
+    );
+  });
+
+  it('lista operadores desde backoffice', async () => {
+    userRepository.findOperators.mockResolvedValue([operator]);
+
+    await request(app.getHttpServer())
+      .get('/admin/users/operators')
+      .set('Authorization', 'Bearer fake-token')
+      .expect(200)
+      .expect(({ body }: HttpResponse<OperatorResponse[]>) => {
+        expect(body[0].id).toBe(operator.id);
+      });
+
+    expect(userRepository.findOperators).toHaveBeenCalled();
+  });
+
+  it('obtiene un operador por id desde backoffice', async () => {
+    userRepository.findOperatorById.mockResolvedValue(operator);
+
+    await request(app.getHttpServer())
+      .get(`/admin/users/operators/${operator.id}`)
+      .set('Authorization', 'Bearer fake-token')
+      .expect(200)
+      .expect(({ body }: HttpResponse<OperatorResponse>) => {
+        expect(body.email).toBe(operator.email);
+      });
+
+    expect(userRepository.findOperatorById).toHaveBeenCalledWith(operator.id);
+  });
+
+  it('crea un operador desde backoffice', async () => {
+    authRepository.createOperator.mockResolvedValue({
+      id: operator.id,
+      email: operator.email,
+    });
+
+    await request(app.getHttpServer())
+      .post('/admin/users/operators')
+      .set('Authorization', 'Bearer fake-token')
+      .send({
+        email: operator.email,
+        password: 'secret123',
+        firstNames: operator.firstNames,
+        lastNames: operator.lastNames,
+        phone: operator.phone,
+      })
+      .expect(201)
+      .expect(({ body }) => {
+        expect(body).toEqual({
+          id: operator.id,
+          email: operator.email,
+        });
+      });
+
+    expect(authRepository.createOperator).toHaveBeenCalledWith({
+      email: operator.email,
+      password: 'secret123',
+      firstNames: operator.firstNames,
+      lastNames: operator.lastNames,
+      phone: operator.phone,
+      assignedBy: authenticatedUser.id,
+    });
+  });
+
+  it('responde 500 si crear operador devuelve una respuesta invalida', async () => {
+    authRepository.createOperator.mockResolvedValue({});
+
+    await request(app.getHttpServer())
+      .post('/admin/users/operators')
+      .set('Authorization', 'Bearer fake-token')
+      .send({
+        email: operator.email,
+        password: 'secret123',
+      })
+      .expect(500);
+  });
+
+  it('actualiza un operador desde backoffice', async () => {
+    userRepository.updateOperator.mockResolvedValue({
+      ...operator,
+      firstNames: 'Operador Editado',
+    });
+
+    await request(app.getHttpServer())
+      .patch(`/admin/users/operators/${operator.id}`)
+      .set('Authorization', 'Bearer fake-token')
+      .send({
+        firstNames: 'Operador Editado',
+      })
+      .expect(200)
+      .expect(({ body }: HttpResponse<OperatorResponse>) => {
+        expect(body.firstNames).toBe('Operador Editado');
+      });
+
+    expect(userRepository.updateOperator).toHaveBeenCalledWith(operator.id, {
+      firstNames: 'Operador Editado',
+    });
+  });
+
+  it('actualiza el estado de un operador desde backoffice', async () => {
+    userRepository.updateOperator.mockResolvedValue({
+      ...operator,
+      isActive: false,
+    });
+
+    await request(app.getHttpServer())
+      .patch(`/admin/users/operators/${operator.id}/status`)
+      .set('Authorization', 'Bearer fake-token')
+      .send({
+        isActive: false,
+      })
+      .expect(200)
+      .expect(({ body }: HttpResponse<OperatorResponse>) => {
+        expect(body.isActive).toBe(false);
+      });
+
+    expect(userRepository.updateOperator).toHaveBeenCalledWith(operator.id, {
+      isActive: false,
+    });
+  });
+
+  it('lista secciones del sitio desde backoffice', async () => {
+    siteSectionRepository.findAdminSections.mockResolvedValue([siteSection]);
+
+    await request(app.getHttpServer())
+      .get('/admin/site-sections')
+      .set('Authorization', 'Bearer fake-token')
+      .expect(200)
+      .expect(({ body }: HttpResponse<SiteSectionResponse[]>) => {
+        expect(body[0].id).toBe(siteSection.id);
+      });
+
+    expect(siteSectionRepository.findAdminSections).toHaveBeenCalled();
+  });
+
+  it('crea una seccion del sitio desde backoffice', async () => {
+    siteSectionRepository.createSection.mockResolvedValue(siteSection);
+
+    await request(app.getHttpServer())
+      .post('/admin/site-sections')
+      .set('Authorization', 'Bearer fake-token')
+      .send({
+        sectionKey: 'contacto',
+        title: 'Contacto',
+        content: {
+          phone: '0999999999',
+        },
+        isPublished: true,
+        displayOrder: 1,
+      })
+      .expect(201)
+      .expect(({ body }: HttpResponse<SiteSectionResponse>) => {
+        expect(body.sectionKey).toBe('contacto');
+      });
+
+    expect(siteSectionRepository.createSection).toHaveBeenCalledWith({
+      sectionKey: 'contacto',
+      title: 'Contacto',
+      content: {
+        phone: '0999999999',
+      },
+      isPublished: true,
+      displayOrder: 1,
+    });
+  });
+
+  it('actualiza una seccion del sitio desde backoffice', async () => {
+    siteSectionRepository.updateSection.mockResolvedValue({
+      ...siteSection,
+      title: 'Contacto actualizado',
+    });
+
+    await request(app.getHttpServer())
+      .patch(`/admin/site-sections/${siteSection.id}`)
+      .set('Authorization', 'Bearer fake-token')
+      .send({
+        title: 'Contacto actualizado',
+      })
+      .expect(200)
+      .expect(({ body }: HttpResponse<SiteSectionResponse>) => {
+        expect(body.title).toBe('Contacto actualizado');
+      });
+
+    expect(siteSectionRepository.updateSection).toHaveBeenCalledWith(
+      siteSection.id,
+      {
+        title: 'Contacto actualizado',
+      },
+    );
+  });
+
+  it('elimina una seccion del sitio desde backoffice', async () => {
+    siteSectionRepository.deleteSection.mockResolvedValue(undefined);
+
+    await request(app.getHttpServer())
+      .delete(`/admin/site-sections/${siteSection.id}`)
+      .set('Authorization', 'Bearer fake-token')
+      .expect(204);
+
+    expect(siteSectionRepository.deleteSection).toHaveBeenCalledWith(
+      siteSection.id,
     );
   });
 });
