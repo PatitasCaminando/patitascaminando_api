@@ -122,6 +122,9 @@ export class AnimalSupabaseRepository implements AnimalRepositoryPort {
         description: input.description,
         general_condition: input.generalCondition,
         photo_paths: input.photoPaths,
+        is_sterilized: input.isSterilized,
+        is_vaccinated: input.isVaccinated,
+        is_dewormed: input.isDewormed,
         status: input.status,
         is_active: input.isActive,
         is_publicly_visible: input.isPubliclyVisible,
@@ -145,6 +148,9 @@ export class AnimalSupabaseRepository implements AnimalRepositoryPort {
         description: input.description,
         general_condition: input.generalCondition,
         photo_paths: input.photoPaths,
+        is_sterilized: input.isSterilized,
+        is_vaccinated: input.isVaccinated,
+        is_dewormed: input.isDewormed,
         status: input.status,
         is_active: input.isActive,
         is_publicly_visible: input.isPubliclyVisible,
@@ -247,6 +253,9 @@ export class AnimalSupabaseRepository implements AnimalRepositoryPort {
       description: row.description,
       generalCondition: row.general_condition,
       photoPaths: row.photo_paths,
+      isSterilized: row.is_sterilized,
+      isVaccinated: row.is_vaccinated,
+      isDewormed: row.is_dewormed,
       status: row.status,
       isActive: row.is_active,
       isPubliclyVisible: row.is_publicly_visible,
@@ -319,5 +328,5 @@ export class AnimalSupabaseRepository implements AnimalRepositoryPort {
   }
 
   private readonly animalSelect =
-    'id, name, species, sex, approximate_age, size, description, general_condition, photo_paths, status, is_active, is_publicly_visible, created_at, updated_at';
+    'id, name, species, sex, approximate_age, size, description, general_condition, photo_paths, is_sterilized, is_vaccinated, is_dewormed, status, is_active, is_publicly_visible, created_at, updated_at';
 }

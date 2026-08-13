@@ -139,6 +139,10 @@ CREATE TABLE public.animals (
 
     photo_paths TEXT[] NOT NULL,
 
+    is_sterilized BOOLEAN NULL,
+    is_vaccinated BOOLEAN NULL,
+    is_dewormed BOOLEAN NULL,
+
     status VARCHAR(30) NOT NULL DEFAULT 'disponible'
         CHECK (status IN (
             'disponible',
@@ -174,6 +178,15 @@ CREATE TABLE public.animals (
         OR (is_active = FALSE AND is_publicly_visible = FALSE)
     )
 );
+
+COMMENT ON COLUMN public.animals.is_sterilized IS
+'Indica si el animal se encuentra esterilizado. NULL significa no especificado.';
+
+COMMENT ON COLUMN public.animals.is_vaccinated IS
+'Indica si el animal se encuentra vacunado. NULL significa no especificado.';
+
+COMMENT ON COLUMN public.animals.is_dewormed IS
+'Indica si el animal se encuentra desparasitado. NULL significa no especificado.';
 
 -- ============================================================================
 -- 5. SOLICITUDES DE ADOPCIÓN

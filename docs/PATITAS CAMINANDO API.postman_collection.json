@@ -595,7 +595,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Luna\",\n  \"species\": \"perro\",\n  \"sex\": \"macho\",\n  \"size\": \"grande\",\n  \"approximateAge\": \"7 anos\",\n  \"status\": \"disponible\",\n  \"description\": \"Perrito muy sociable\",\n  \"generalCondition\": \"Patita herida en accidente\",\n  \"photoPaths\": [\n    \"{{animalImagePath}}\"\n  ],\n  \"isActive\": true,\n  \"isPubliclyVisible\": true\n}"
+              "raw": "{\n  \"name\": \"Luna\",\n  \"species\": \"perro\",\n  \"sex\": \"macho\",\n  \"size\": \"grande\",\n  \"approximateAge\": \"7 anos\",\n  \"status\": \"disponible\",\n  \"description\": \"Perrito muy sociable\",\n  \"generalCondition\": \"Patita herida en accidente\",\n  \"photoPaths\": [\n    \"{{animalImagePath}}\"\n  ],\n  \"isSterilized\": true,\n  \"isVaccinated\": true,\n  \"isDewormed\": true,\n  \"isActive\": true,\n  \"isPubliclyVisible\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/animals",
@@ -622,7 +622,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"status\": \"en_proceso\",\n  \"isPubliclyVisible\": true\n}"
+              "raw": "{\n  \"status\": \"en_proceso\",\n  \"isSterilized\": false,\n  \"isVaccinated\": true,\n  \"isDewormed\": true,\n  \"isPubliclyVisible\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/animals/{{animalId}}",

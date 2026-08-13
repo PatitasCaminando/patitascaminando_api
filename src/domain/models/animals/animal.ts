@@ -26,6 +26,9 @@ export interface Animal {
   description: string;
   generalCondition: string;
   photoPaths: string[];
+  isSterilized: boolean | null;
+  isVaccinated: boolean | null;
+  isDewormed: boolean | null;
   isActive: boolean;
   isPubliclyVisible: boolean;
   createdAt: string;

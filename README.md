@@ -328,6 +328,45 @@ DELETE /admin/animals/:id/images/:imageId
 
 El `DELETE /admin/animals/:id` no borra fisicamente. Archiva el animal y lo oculta de la parte publica.
 
+Los animales incluyen tres campos medicos opcionales en requests y responses:
+
+```txt
+isSterilized
+isVaccinated
+isDewormed
+```
+
+Estos campos aceptan:
+
+```txt
+true  = si esta confirmado
+false = no aplica o no esta realizado
+null  = no especificado todavia
+```
+
+Ejemplo para crear o actualizar un animal:
+
+```json
+{
+  "name": "Luna",
+  "species": "perro",
+  "sex": "hembra",
+  "size": "mediano",
+  "approximateAge": "2 anios",
+  "status": "disponible",
+  "description": "Perrita tranquila.",
+  "generalCondition": "Buen estado general.",
+  "photoPaths": ["animals/pending/luna.jpg"],
+  "isSterilized": true,
+  "isVaccinated": true,
+  "isDewormed": true,
+  "isActive": true,
+  "isPubliclyVisible": true
+}
+```
+
+Para evitar duplicados, `POST /admin/animals` responde `409 Conflict` si ya existe un animal no archivado con los mismos datos principales: `name`, `species`, `sex`, `approximateAge` y `size`.
+
 ## Backoffice: adopciones
 
 ```http
