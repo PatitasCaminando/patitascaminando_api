@@ -326,7 +326,7 @@ POST /admin/animals/:id/images/upload
 DELETE /admin/animals/:id/images/:imageId
 ```
 
-El `DELETE /admin/animals/:id` no borra fisicamente. Archiva el animal, lo marca como inactivo, lo oculta de la parte publica y deja de aparecer en el listado principal del backoffice. El registro permanece en Supabase como historial.
+El `DELETE /admin/animals/:id` no borra fisicamente. Archiva el animal y lo oculta de la parte publica. El registro permanece en Supabase como historial y sigue disponible para consulta desde el backoffice.
 
 Los animales incluyen tres campos medicos opcionales en requests y responses:
 

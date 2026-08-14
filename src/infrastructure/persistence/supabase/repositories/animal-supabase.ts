@@ -67,7 +67,6 @@ export class AnimalSupabaseRepository implements AnimalRepositoryPort {
     const { data, error, count } = await this.supabase
       .from('animals')
       .select(this.animalSelect, { count: 'exact' })
-      .neq('status', 'archivado')
       .order('created_at', { ascending: false })
       .range(from, to)
       .returns<AnimalProfileRow[]>();
