@@ -508,3 +508,17 @@ Aplicacion movil
 Auditoria completa
 Envio real de correos para notificaciones internas
 ```
+
+## Uso de Marca e Identidad
+
+Los recursos visuales de la fundacion, incluyendo logotipos, imagotipos, doodles, fotografias, nombres, textos institucionales, piezas graficas y material multimedia, pertenecen a Patitas Caminando o a sus respectivos titulares.
+
+La licencia MIT aplica unicamente al codigo fuente del proyecto. El uso, distribucion, modificacion o explotacion comercial de los recursos de marca requiere autorizacion expresa de Patitas Caminando.
+
+Para mas detalle, revisar el archivo [`BRAND_NOTICE.md`](./BRAND_NOTICE.md).
+
+## Licencia
+
+El codigo fuente de este proyecto se distribuye bajo licencia MIT.
+
+Consulta el archivo [`LICENSE`](./LICENSE) para mas informacion.
