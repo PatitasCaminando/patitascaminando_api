@@ -23,6 +23,7 @@ import { CreateAnimalUseCase } from '../../../application/use-cases/animals/crea
 import { DeleteAnimalImageUseCase } from '../../../application/use-cases/animals/delete-animal-image';
 import { DeleteAnimalUseCase } from '../../../application/use-cases/animals/delete-animal';
 import { GetAdminAnimalsUseCase } from '../../../application/use-cases/animals/get-admin-animals';
+import { PermanentlyDeleteArchivedAnimalUseCase } from '../../../application/use-cases/animals/permanently-delete-archived-animal';
 import { UpdateAnimalUseCase } from '../../../application/use-cases/animals/update-animal';
 import { UploadAnimalImageUseCase } from '../../../application/use-cases/animals/upload-animal-image';
 import type { AuthenticatedUser } from '../../../domain/models/auth/authenticated-user';
@@ -53,6 +54,7 @@ export class AdminAnimalsController {
     private readonly createAnimalUseCase: CreateAnimalUseCase,
     private readonly updateAnimalUseCase: UpdateAnimalUseCase,
     private readonly deleteAnimalUseCase: DeleteAnimalUseCase,
+    private readonly permanentlyDeleteArchivedAnimalUseCase: PermanentlyDeleteArchivedAnimalUseCase,
     private readonly addAnimalImageUseCase: AddAnimalImageUseCase,
     private readonly uploadAnimalImageUseCase: UploadAnimalImageUseCase,
     private readonly deleteAnimalImageUseCase: DeleteAnimalImageUseCase,
@@ -88,6 +90,12 @@ export class AdminAnimalsController {
   @HttpCode(204)
   deleteAnimal(@Param('id') id: string): Promise<void> {
     return this.deleteAnimalUseCase.execute(id);
+  }
+
+  @Delete(':id/permanent')
+  @HttpCode(204)
+  permanentlyDeleteArchivedAnimal(@Param('id') id: string): Promise<void> {
+    return this.permanentlyDeleteArchivedAnimalUseCase.execute(id);
   }
 
   @Post(':id/images')

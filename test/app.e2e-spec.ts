@@ -224,6 +224,7 @@ describe('Patitas Caminando API (e2e)', () => {
     createAnimal: jest.fn(),
     updateAnimal: jest.fn(),
     deleteAnimal: jest.fn(),
+    permanentlyDeleteArchivedAnimal: jest.fn(),
     addImage: jest.fn(),
     uploadImageFile: jest.fn(),
     uploadImage: jest.fn(),
@@ -663,6 +664,21 @@ describe('Patitas Caminando API (e2e)', () => {
       .expect(204);
 
     expect(animalRepository.deleteAnimal).toHaveBeenCalledWith(animal.id);
+  });
+
+  it('elimina definitivamente un animal archivado desde backoffice', async () => {
+    animalRepository.permanentlyDeleteArchivedAnimal.mockResolvedValue(
+      undefined,
+    );
+
+    await request(app.getHttpServer())
+      .delete(`/admin/animals/${animal.id}/permanent`)
+      .set('Authorization', 'Bearer fake-token')
+      .expect(204);
+
+    expect(
+      animalRepository.permanentlyDeleteArchivedAnimal,
+    ).toHaveBeenCalledWith(animal.id);
   });
 
   it('agrega una imagen existente a un animal', async () => {

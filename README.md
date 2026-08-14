@@ -320,6 +320,7 @@ GET /admin/animals?page=1&limit=10
 POST /admin/animals
 PATCH /admin/animals/:id
 DELETE /admin/animals/:id
+DELETE /admin/animals/:id/permanent
 POST /admin/animals/images/upload
 POST /admin/animals/:id/images
 POST /admin/animals/:id/images/upload
@@ -327,6 +328,8 @@ DELETE /admin/animals/:id/images/:imageId
 ```
 
 El `DELETE /admin/animals/:id` no borra fisicamente. Archiva el animal y lo oculta de la parte publica. El registro permanece en Supabase como historial y sigue disponible para consulta desde el backoffice.
+
+El `DELETE /admin/animals/:id/permanent` borra fisicamente el registro de Supabase y solo debe usarse desde la vista de archivados. Si el animal no esta archivado, la API responde error.
 
 Los animales incluyen tres campos medicos opcionales en requests y responses:
 

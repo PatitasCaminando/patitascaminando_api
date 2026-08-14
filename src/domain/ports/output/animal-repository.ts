@@ -79,6 +79,7 @@ export interface AnimalRepositoryPort {
   createAnimal(input: CreateAnimalInput): Promise<Animal>;
   updateAnimal(id: string, input: UpdateAnimalInput): Promise<Animal>;
   deleteAnimal(id: string): Promise<void>;
+  permanentlyDeleteArchivedAnimal(id: string): Promise<void>;
   addImage(animalId: string, input: AddAnimalImageInput): Promise<AnimalImage>;
   uploadImageFile(input: UploadAnimalImageInput): Promise<UploadedAnimalImage>;
   uploadImage(
