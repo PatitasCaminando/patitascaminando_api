@@ -15,6 +15,7 @@ import { DeleteAnimalUseCase } from './application/use-cases/animals/delete-anim
 import { GetAdminAnimalsUseCase } from './application/use-cases/animals/get-admin-animals';
 import { GetPublicAnimalBySlugUseCase } from './application/use-cases/animals/get-public-animal-by-slug';
 import { GetPublicAnimalsUseCase } from './application/use-cases/animals/get-public-animals';
+import { PermanentlyDeleteArchivedAnimalUseCase } from './application/use-cases/animals/permanently-delete-archived-animal';
 import { UpdateAnimalUseCase } from './application/use-cases/animals/update-animal';
 import { UploadAnimalImageUseCase } from './application/use-cases/animals/upload-animal-image';
 import { GetCurrentUserUseCase } from './application/use-cases/auth/get-current-user';
@@ -103,6 +104,7 @@ import { SupabaseModule } from './infrastructure/persistence/supabase/supabase.m
     UpdateAnimalUseCase,
     UploadAnimalImageUseCase,
     DeleteAnimalUseCase,
+    PermanentlyDeleteArchivedAnimalUseCase,
     AddAnimalImageUseCase,
     DeleteAnimalImageUseCase,
     CreateAdoptionApplicationUseCase,

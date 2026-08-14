@@ -1,6 +1,7 @@
 import {
   Inject,
   Injectable,
+  BadRequestException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
@@ -172,6 +173,20 @@ export class AnimalSupabaseRepository implements AnimalRepositoryPort {
         is_publicly_visible: false,
       })
       .eq('id', id);
+
+    if (error) throw new InternalServerErrorException(error.message);
+  }
+
+  async permanentlyDeleteArchivedAnimal(id: string): Promise<void> {
+    const animal = await this.findAdminAnimalById(id);
+
+    if (animal.status !== 'archivado') {
+      throw new BadRequestException(
+        'Solo se puede eliminar definitivamente un animal archivado.',
+      );
+    }
+
+    const { error } = await this.supabase.from('animals').delete().eq('id', id);
 
     if (error) throw new InternalServerErrorException(error.message);
   }
